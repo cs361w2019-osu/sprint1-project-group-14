@@ -33,8 +33,8 @@ public class BoardTest {
 
         Board board2 = new Board();
         Ship s2 = new Ship("BATTLESHIP");
-        assertFalse(board2.placeShip(s2, 7, 'A', true));
-        assertTrue(board2.placeShip(s2, 6, 'A', true));
+        assertFalse(board2.placeShip(s2, 8, 'A', true));
+        assertTrue(board2.placeShip(s2, 7, 'A', true));
     }
 
     @Test
