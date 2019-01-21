@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Board {
-
+	@JsonProperty private List<Ship> ships;
+	@JsonProperty private List<Result> results;
 	/*
 	DO NOT change the signature of this method. It is used by the grading scripts.
 	 */
 	public Board() {
-		// TODO Implement
+		this.ships = new ArrayList<>();
+		this.results =new ArrayList<>();
 	}
 
 	/*
@@ -17,6 +19,16 @@ public class Board {
 	 */
 	public boolean placeShip(Ship ship, int x, char y, boolean isVertical) {
 		// TODO Implement
+		int len=ship.getLength();
+		if(isVertical == True){
+			for(int i=0;i<len;i++){
+
+			}
+
+		}else{
+
+		}
+
 		return false;
 	}
 
@@ -29,20 +41,18 @@ public class Board {
 	}
 
 	public List<Ship> getShips() {
-		//TODO implement
-		return null;
+		return this.ships;
 	}
 
 	public void setShips(List<Ship> ships) {
-		//TODO implement
+		this.ships=ships;
 	}
 
 	public List<Result> getAttacks() {
-		//TODO implement
-		return null;
+		return this.results;
 	}
 
 	public void setAttacks(List<Result> attacks) {
-		//TODO implement
+		this.results=attacks;
 	}
 }
