@@ -38,13 +38,13 @@ public class Board {
 		}
 
 		// User cannot place outside of grid
-		if (x < 1 || x > 10 || y < 'A' || y > 'J') {
+		if (x < 1 || x > 10 || y < 'A' || y > 'K') {
 			return false;
 		}
 
 		// Ship cannot go off grid
 		if ((isVertical && x + shipLength > 10) ||
-				(!isVertical && (char) y + shipLength > 'J')) {
+				(!isVertical && (char) y + shipLength > 'K')) {
 			return false;
 		}
 

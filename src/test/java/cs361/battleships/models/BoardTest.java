@@ -28,8 +28,8 @@ public class BoardTest {
     public void testFullOutOfBounds() {
         Board board = new Board();
         Ship s = new Ship("DESTROYER");
-        assertFalse(board.placeShip(s, 1, 'H', false));
-        assertTrue(board.placeShip(s, 1, 'G', false));
+        assertFalse(board.placeShip(s, 1, 'I', false));
+        assertTrue(board.placeShip(s, 1, 'H', false));
 
         Board board2 = new Board();
         Ship s2 = new Ship("BATTLESHIP");
