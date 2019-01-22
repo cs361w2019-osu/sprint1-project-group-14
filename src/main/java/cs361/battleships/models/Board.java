@@ -1,14 +1,18 @@
 package cs361.battleships.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
+
+import static cs361.battleships.models.AtackStatus.*;
 
 
 public class Board {
 
 	@JsonProperty private List<Ship> ships;
 	@JsonProperty private List<Result> attacks;
+	@JsonProperty private List<Ship> sunkShips;
 
 	/*
 	DO NOT change the signature of this method. It is used by the grading scripts.
@@ -16,6 +20,7 @@ public class Board {
 	public Board() {
 		ships = new ArrayList<>();
 		attacks = new ArrayList<>();
+		sunkShips = new ArrayList<>();
 	}
 
 	/**
@@ -74,12 +79,58 @@ public class Board {
 		return true;
 	}
 
-	/*
-	DO NOT change the signature of this method. It is used by the grading scripts.
+	/**
+	 * Computes the result of an attack on a specific square.
+	 * Verified validity of attack and adds it to list of attacks.
+	 *
+	 * @param x set X coordinate of the attack square.
+	 * @param y set Y coordinate of the attack square.
+	 * @return Result the outcome of the attack.
 	 */
 	public Result attack(int x, char y) {
-		//TODO Implement
-		return null;
+	    Result outcome = new Result();
+	    outcome.setLocation(new Square(x, y));
+
+		if (x < 1 || x > 10 || y < 'A' || y > 'J') {
+            outcome.setResult(INVALID);
+            return outcome;
+		}
+        for (Ship s : ships) {
+			if (s.getOccupiedSquares().contains(outcome.getLocation())) {
+				outcome.setShip(s);
+				outcome.setResult(HIT);
+				break;
+			}
+		}
+        if (outcome.getResult() != HIT) {
+			outcome.setResult(MISS);
+			attacks.add(outcome);
+			return outcome;
+		}
+
+		int hitCount = 0;
+		for (Result r : attacks) {
+			if (r.getLocation().equals(outcome.getLocation())) {
+				outcome.setResult(INVALID);
+				return outcome;
+			} else if (r.getShip().getShipName().equals(outcome.getShip().getShipName())) {
+				hitCount++;
+			}
+			if (hitCount == outcome.getShip().getLength() - 1) {
+				outcome.setResult(SUNK);
+				sunkShips.add(r.getShip());
+			}
+		}
+
+		// If all ships were sunk trigger surrender
+        if (sunkShips.size() == ships.size()) {
+        	outcome.setResult(SURRENDER);
+		}
+
+        // Attack was valid, add it to the list
+        attacks.add(outcome);
+
+        return outcome;
 	}
 
 	/**
@@ -97,12 +148,17 @@ public class Board {
 	}
 
 
+	/**
+	 * @return List<Result> get array of attacks made.
+	 */
 	public List<Result> getAttacks() {
-		//TODO implement
-		return null;
+		return attacks;
 	}
 
+	/**
+	 * @param attacks set the attacks made list.
+	 */
 	public void setAttacks(List<Result> attacks) {
-		//TODO implement
+        this.attacks = attacks;
 	}
 }
