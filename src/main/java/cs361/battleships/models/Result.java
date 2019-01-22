@@ -5,12 +5,11 @@ public class Result {
 	private Ship ship;
 	private Square location;
 	public AtackStatus getResult() {
-		//TODO implement
-		return null;
+		return this.Status;
 	}
 
 	public void setResult(AtackStatus result) {
-		//TODO implement
+		this.Status=result;
 	}
 
 	public Ship getShip() {
