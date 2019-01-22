@@ -10,9 +10,10 @@ public class AIPlacementTest {
     public void testInvalidPosition() {
         Game g = new Game();
         for (int i = 0; i < 1000; i++) {
-            assertFalse(g.randCol()>'k');
-            assertFalse(g.randRow()>10);
-            assertFalse(g.randRow()< 0);
+            assertFalse(g.randCol() < 'A');
+            assertFalse(g.randCol() > 'K');
+            assertFalse(g.randRow() > 10);
+            assertFalse(g.randRow() < 0);
         }
     }
 }
