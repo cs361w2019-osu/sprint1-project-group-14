@@ -37,4 +37,10 @@ public class Ship {
 		return this.shiplen;
 	}
 
+	public void AddOccupied(int x,char y){
+		Square new_sq=new Square();
+		new_sq.setRow(x);
+		new_sq.setColumn(y);
+		occupiedSquares.add(new_sq);
+	}
 }

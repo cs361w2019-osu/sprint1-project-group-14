@@ -22,11 +22,10 @@ public class Result {
 	}
 
 	public Square getLocation() {
-		//TODO implement
-		return null;
+		return this.location;
 	}
 
 	public void setLocation(Square square) {
-		//TODO implement
+		this.location=square;
 	}
 }

@@ -19,24 +19,32 @@ public class Board {
 	 */
 	public boolean placeShip(Ship ship, int x, char y, boolean isVertical) {
 		// TODO Implement
+		char c_occ='A';
+		int c_acs=0;
 		int len=ship.getLength();
 		if(isVertical == True){
-			for(int i=0;i<len;i++){
-
+			if((int)y+len<75){
+				for(int i=0;i<len;i++){
+					c_acs=(int)y+len;
+					c_occ=(char)c_acs;
+					ship.AddOccupied(x,c_occ);
+				}
 			}
-
 		}else{
-
+			if(x+len<10){
+				for(int i=0;i<len;i++){
+					ship.AddOccupied(x+len,y);
+				}
+			}
 		}
-
-		return false;
+		return true;
 	}
 
 	/*
 	DO NOT change the signature of this method. It is used by the grading scripts.
 	 */
 	public Result attack(int x, char y) {
-		//TODO Implement
+
 		return null;
 	}
 
