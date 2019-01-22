@@ -1,7 +1,7 @@
 package cs361.battleships.models;
 
 public class Result {
-	private  AtackStatus Status;
+	private AtackStatus Status;
 	private Ship ship;
 	private Square location;
 	public AtackStatus getResult() {
