@@ -52,7 +52,7 @@ public class Game {
      * @return char random Column from 'A' to 'J'.
      */
     char randCol() {
-        return (char)(new Random().nextInt(10) + 1 + 65);
+        return (char)(new Random().nextInt(10) + 65);
     }
 
     /**
