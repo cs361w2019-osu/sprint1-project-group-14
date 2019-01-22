@@ -9,7 +9,7 @@ public class Result {
 	}
 
 	public void setResult(AtackStatus result) {
-		this.Status=result;
+		this.Status = result;
 	}
 
 	public Ship getShip() {
@@ -17,7 +17,7 @@ public class Result {
 	}
 
 	public void setShip(Ship ship) {
-		this.ship=ship;
+		this.ship = ship;
 	}
 
 	public Square getLocation() {
@@ -25,6 +25,6 @@ public class Result {
 	}
 
 	public void setLocation(Square square) {
-		this.location=square;
+		this.location = square;
 	}
 }
