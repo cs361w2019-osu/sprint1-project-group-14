@@ -1,6 +1,5 @@
 package cs361.battleships.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
@@ -91,50 +90,50 @@ public class Board {
 	    Result outcome = new Result();
 	    outcome.setLocation(new Square(x, y));
 
-	    // Check if coordinates in range of board.
-		if (x < 1 || x > 10 || y < 'A' || y > 'J') {
+	    // Check if attack in bounds of Board.
+        if (x < 1 || x > 10 || y < 'A' || y > 'J') {
             outcome.setResult(INVALID);
-			return outcome;
-		}
-		// Assume miss.
-		outcome.setResult(MISS);
+            return outcome;
+        }
+        // Assume miss.
+        outcome.setResult(MISS);
 
-		// Check if shot hits a ship.
+        // Check if shot hits a ship.
         for (Ship s : ships) {
-			if (s.getOccupiedSquares().contains(outcome.getLocation())) {
-				outcome.setShip(s);
-				outcome.setResult(HIT);
-				break;
-			}
-		}
+            if (s.getOccupiedSquares().contains(outcome.getLocation())) {
+                outcome.setShip(s);
+                outcome.setResult(HIT);
+                break;
+            }
+        }
 
         // hitCount represents the number of hits the given ship has already suffered.
-		int hitCount = 0;
-		for (Result r : attacks) {
-			// Check if location was previously attacked.
-			if (r.getLocation().equals(outcome.getLocation())) {
-				outcome.setResult(INVALID);
-				return outcome;
-			}
-			// Make sure we are not dealing with misses.
-			if (r.getResult() == HIT && outcome.getResult() == HIT) {
-				// Increment ship hit if the same ship was hit.
-				if (r.getShip().getShipName().equals(outcome.getShip().getShipName())) {
-					hitCount++;
-				}
-			}
-		}
+        int hitCount = 0;
+        for (Result r : attacks) {
+            // Check if location was previously attacked.
+            if (r.getLocation().equals(outcome.getLocation())) {
+                outcome.setResult(INVALID);
+                return outcome;
+            }
+            // Make sure we are not dealing with misses.
+            if (r.getResult() == HIT && outcome.getResult() == HIT) {
+                // Increment ship hit if the same ship was hit.
+                if (r.getShip().getShipName().equals(outcome.getShip().getShipName())) {
+                    hitCount++;
+                }
+            }
+        }
 
-		// If all squares of ship hit it is considered sunk.
-		if (outcome.getResult() == HIT && hitCount == outcome.getShip().getLength() - 1) {
-			outcome.setResult(SUNK);
-			sunkShips.add(outcome.getShip());
-		}
+        // If all squares of ship hit it is considered sunk.
+        if (outcome.getResult() == HIT && hitCount == outcome.getShip().getLength() - 1) {
+            outcome.setResult(SUNK);
+            sunkShips.add(outcome.getShip());
+        }
 
-		// If all ships were sunk trigger surrender.
+        // If all ships were sunk trigger surrender.
         if (sunkShips.size() >= ships.size()) {
-        	outcome.setResult(SURRENDER);
-		}
+            outcome.setResult(SURRENDER);
+        }
 
         // Attack was valid; add it to the list.
         attacks.add(outcome);
