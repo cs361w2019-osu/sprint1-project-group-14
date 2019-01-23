@@ -2,10 +2,9 @@ package cs361.battleships.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Random;
 
-import static cs361.battleships.models.AtackStatus.*;
+import static cs361.battleships.models.AtackStatus.INVALID;
 
 public class Game {
 
@@ -24,7 +23,7 @@ public class Game {
         do {
             // AI places random ships, so it might try and place overlapping ships
             // let it try until it gets it right
-            opponentPlacedSuccessfully = opponentsBoard.placeShip(ship, randRow(), randCol(), randVertical());
+            opponentPlacedSuccessfully = opponentsBoard.placeShip(new Ship(ship.getShipName()), randRow(), randCol(), randVertical());
         } while (!opponentPlacedSuccessfully);
 
         return true;
@@ -44,23 +43,29 @@ public class Game {
             // AI does random attacks, so it might attack the same spot twice
             // let it try until it gets it right
             opponentAttackResult = playersBoard.attack(randRow(), randCol());
-        } while(opponentAttackResult.getResult() != INVALID);
+        } while(opponentAttackResult.getResult() == INVALID);
 
         return true;
     }
 
-    private char randCol() {
-        // TODO implement
-        return 'X';
+    /**
+     * @return char random Column from 'A' to 'J'.
+     */
+    char randCol() {
+        return (char)(new Random().nextInt(10) + 65);
     }
 
-    private int randRow() {
-        // TODO implement
-        return 0;
+    /**
+     * @return int random row from 1 to 10.
+     */
+    int randRow() {
+        return new Random().nextInt(10) + 1;
     }
 
+    /**
+     * @return boolean random true and false.
+     */
     private boolean randVertical() {
-        // TODO implement
-        return false;
+        return new Random().nextInt(2) > 0.5;
     }
 }
