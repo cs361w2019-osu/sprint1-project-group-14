@@ -16,6 +16,53 @@
     width: 30px;
 }
 
+#is_vertical, #alignment {
+    width: 120px;
+    height: 30px;
+    margin: 10px;
+}
+
+#is_vertical {
+    border: 1px solid black;
+}
+
+.ships {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 30px;
+}
+
+.ship {
+    border: 1px solid black;
+    border-spacing: 0px;
+    margin: 10px;
+}
+
+.ship tr {
+    border: 1px solid black;
+    height: 30px;
+}
+
+.ship td {
+    border: 1px solid black;
+    width: 30px;
+}
+
+
+.ship[data-selected="true"] {
+    background-color: blue;
+}
+
+.ship[data-placed="true"] {
+    background-color: red;
+}
+
+.ship:hover {
+    background-color: gray;
+}
+
 td:hover {
     background-color: gray;
 }
@@ -38,4 +85,20 @@ td:hover {
 
 .miss {
     background-color: blue;
+}
+
+.mainGame, .playerSide {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.barrier {
+    border: 1px solid black;
+    height: 300px;
+}
+
+#playerHeading, #opponentHeading {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
 }
