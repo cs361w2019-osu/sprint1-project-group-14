@@ -4,18 +4,71 @@
 
 <h1>The Battleship game</h1>
 
-<table id="opponent" class="battleGrid">
-</table>
+<div class="mainGame">
+    <h1 id="playerHeading">
+        PLAYER
+    </h1>
+    <table id="player" class="battleGrid">
+    </table>
+    <div class="ships">
+        <button id="is_vertical" data-toggled="false">Mode: Horizontal</button>
+        <table class="ship" id="place_minesweeper" data-selected="false" data-placed="false">
+            <tr>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+        <table class="ship" id="place_destroyer" data-selected="false" data-placed="false">
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+        <table class="ship" id="place_battleship" data-selected="false" data-placed="false">
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
 
-<table id="player" class="battleGrid">
-</table>
+    <div class="barrier">
+    </div>
 
-<ul>
-    <li><button id="place_minesweeper">Place Minesweeper</button></li>
-    <li><button id="place_destroyer">Place Destroyer</button></li>
-    <li><button id="place_battleship">Place Battleship</button></li>
-    <li><input type="checkbox" id="is_vertical">Vertical</input></li>
-</ul>
+    <div class="ships">
+        <!-- Fake Button -->
+        <div id="alignment"></div>
+        <table class="ship" id="opponent_minesweeper" data-placed="false">
+            <tr>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+        <table class="ship" id="opponent_destroyer" data-placed="false">
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+        <table class="ship" id="opponent_battleship" data-placed="false">
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+    <table id="opponent" class="battleGrid">
+    </table>
+    <h1 id="opponentHeading">
+        OPPONENT
+    </h1>
+</div>
 
 <script type="text/javascript" src="/assets/game.js"></script>
 <script>

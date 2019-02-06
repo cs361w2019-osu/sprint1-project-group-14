@@ -63,6 +63,12 @@ function registerCellListener(f) {
 }
 
 function cellClick() {
+    let playerShipsMap = {"MINESWEEPER" : "place_minesweeper",
+                          "DESTROYER"   : "place_destroyer",
+                          "BATTLESHIP"  : "place_battleship"};
+    let opponentShipsMap = {"MINESWEEPER" : "opponent_minesweeper",
+                            "DESTROYER"   : "opponent_destroyer",
+                            "BATTLESHIP"  : "opponent_battleship"};
     let row = this.parentNode.rowIndex + 1;
     let col = String.fromCharCode(this.cellIndex + 65);
     if (isSetup) {
@@ -74,6 +80,10 @@ function cellClick() {
                 isSetup = false;
                 registerCellListener((e) => {});
             }
+            document.getElementById(playerShipsMap[shipType]).dataset.placed = "true";
+            window.setTimeout(function() {
+                document.getElementById(opponentShipsMap[shipType]).dataset.placed = "true";
+            }, 500);
         });
     } else {
         sendXhr("POST", "/attack", {game: game, x: row, y: col}, function(data) {
@@ -101,7 +111,7 @@ function place(size) {
     return function() {
         let row = this.parentNode.rowIndex;
         let col = this.cellIndex;
-        vertical = document.getElementById("is_vertical").checked;
+        vertical = (document.getElementById("is_vertical").dataset.toggled) == "true";
         let table = document.getElementById("player");
         for (let i=0; i<size; i++) {
             let cell;
@@ -125,19 +135,63 @@ function place(size) {
 }
 
 function initGame() {
+    let p_ships = ["place_minesweeper", "place_destroyer", "place_battleship"];
     makeGrid(document.getElementById("opponent"), false);
     makeGrid(document.getElementById("player"), true);
     document.getElementById("place_minesweeper").addEventListener("click", function(e) {
         shipType = "MINESWEEPER";
-       registerCellListener(place(2));
+        let s = document.getElementById("place_minesweeper");
+        p_ships.forEach(function(ship) {
+            let s = document.getElementById(ship);
+            if(s.dataset.placed == "false") {
+                s.dataset.selected = "false";
+            };
+        });
+        s.dataset.selected = "true";
+
+        if (s.dataset.placed == "false") {
+            registerCellListener(place(2));
+        }
     });
     document.getElementById("place_destroyer").addEventListener("click", function(e) {
         shipType = "DESTROYER";
-       registerCellListener(place(3));
+        let s = document.getElementById("place_destroyer");
+        p_ships.forEach(function(ship) {
+             let s = document.getElementById(ship);
+             if(s.dataset.placed == "false") {
+                 s.dataset.selected = "false";
+             };
+        });
+        s.dataset.selected = "true";
+
+        if (s.dataset.placed == "false") {
+            registerCellListener(place(3));
+        }
     });
     document.getElementById("place_battleship").addEventListener("click", function(e) {
         shipType = "BATTLESHIP";
-       registerCellListener(place(4));
+        let s = document.getElementById("place_battleship");
+        p_ships.forEach(function(ship) {
+             let s = document.getElementById(ship);
+             if(s.dataset.placed == "false") {
+                 s.dataset.selected = "false";
+             };
+        });
+        s.dataset.selected = "true";
+
+        if (s.dataset.placed == "false") {
+            registerCellListener(place(4));
+        }
+    });
+    document.getElementById("is_vertical").addEventListener("click", function(e) {
+        let b = e.srcElement;
+        if (b.dataset.toggled == "true") {
+            b.innerHTML = "Mode: Horizontal"
+            b.dataset.toggled = "false";
+        } else {
+            b.innerHTML = "Mode: Vertical"
+            b.dataset.toggled = "true";
+        };
     });
     sendXhr("GET", "/game", {}, function(data) {
         game = data;
