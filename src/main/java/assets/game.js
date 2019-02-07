@@ -35,14 +35,20 @@ function markHits(board, elementId, surrenderText) {
 }
 
 function markActionBar(person, result) {
-    if (result === "miss") result = "missed";
-    if (result) {
-        actionStatus = person.replace(/\b\w/g, function(l){ return l.toUpperCase() }) + " was " + result + ".";
+    if (result === "miss") {
+        resultStatus = "missed"
     } else {
+        resultStatus = result;
+    };
+
+    if (result) {
+        actionStatus = person.replace(/\b\w/g, function(l){ return l.toUpperCase() }) + " was " + resultStatus + ".";
+    } else {
+        result = "-"
         actionStatus = "-";
     }
 
-    document.getElementsByClassName(person+"-result")[0].dataset.result = actionStatus;
+    document.getElementsByClassName(person+"-result")[0].dataset.result = result;
     document.getElementsByClassName(person+"-result")[0].innerHTML = actionStatus;
 }
 
