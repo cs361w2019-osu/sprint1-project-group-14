@@ -189,7 +189,7 @@ function initGame() {
             b.innerHTML = "Mode: Horizontal"
             b.dataset.toggled = "false";
         } else {
-            b.innerHTML = "&nbsp;&nbsp;&nbsp;Mode: Vertical&nbsp;&nbsp;&nbsp;"
+            b.innerHTML = "Mode: Vertical"
             b.dataset.toggled = "true";
         };
     });
