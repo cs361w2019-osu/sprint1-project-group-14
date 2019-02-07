@@ -35,8 +35,15 @@ function markHits(board, elementId, surrenderText) {
 }
 
 function markActionBar(person, result) {
-    document.getElementsByClassName(person+"-result")[0].dataset.result = result;
-    document.getElementsByClassName(person+"-result")[0].innerHTML = result;
+    if (result === "miss") result = "missed";
+    if (result) {
+        actionStatus = person.replace(/\b\w/g, function(l){ return l.toUpperCase() }) + " was " + result + ".";
+    } else {
+        actionStatus = "-";
+    }
+
+    document.getElementsByClassName(person+"-result")[0].dataset.result = actionStatus;
+    document.getElementsByClassName(person+"-result")[0].innerHTML = actionStatus;
 }
 
 function fillStatusBar() {
