@@ -7,7 +7,7 @@
 }
 
 .battleGrid tr {
-    border: 1px solid black;
+    border: 1px solid red;
     height: 30px;
 }
 
@@ -73,6 +73,10 @@ td:hover {
 
 .occupied {
     background-color: black;
+}
+
+.disabled {
+    background-color: gray;
 }
 
 .hit {

@@ -31,11 +31,24 @@ function markHits(board, elementId, surrenderText) {
     });
 }
 
+function disableGrid(grid) {
+    for (i=0; i<10; i++) {
+        for (j=0; j<10; j++) {
+            grid.rows[i].cells[j].classList.add("disabled");
+        }
+    }
+}
+
 function redrawGrid() {
     Array.from(document.getElementById("opponent").childNodes).forEach((row) => row.remove());
     Array.from(document.getElementById("player").childNodes).forEach((row) => row.remove());
     makeGrid(document.getElementById("opponent"), false);
     makeGrid(document.getElementById("player"), true);
+
+    if (isSetup) {
+        disableGrid(document.getElementById("opponent"));
+    }
+
     if (game === undefined) {
         return;
     }
@@ -74,15 +87,16 @@ function cellClick() {
     if (isSetup) {
         sendXhr("POST", "/place", {game: game, shipType: shipType, x: row, y: col, isVertical: vertical}, function(data) {
             game = data;
-            redrawGrid();
             placedShips++;
             if (placedShips == 3) {
                 isSetup = false;
                 registerCellListener((e) => {});
             }
+            redrawGrid();
             document.getElementById(playerShipsMap[shipType]).dataset.placed = "true";
             window.setTimeout(function() {
                 document.getElementById(opponentShipsMap[shipType]).dataset.placed = "true";
+                document.getElementById(opponentShipsMap[shipType]).classList.remove("disabled");
             }, 500);
         });
     } else {
@@ -93,11 +107,20 @@ function cellClick() {
     }
 }
 
+function redBlink(grid) {
+    grid.style.border = "2px solid red";
+    window. setTimeout(function(){
+        grid.style.border = "1px solid black";
+    }, 200);
+}
+
 function sendXhr(method, url, data, handler) {
     var req = new XMLHttpRequest();
     req.addEventListener("load", function(event) {
         if (req.status != 200) {
-            alert("Cannot complete the action");
+            // alert("Cannot complete the action");
+            redBlink(document.getElementById('player'));
+            redBlink(document.getElementById('opponent'));
             return;
         }
         handler(JSON.parse(req.responseText));
@@ -193,6 +216,7 @@ function initGame() {
             b.dataset.toggled = "true";
         };
     });
+    disableGrid(document.getElementById("opponent"));
     sendXhr("GET", "/game", {}, function(data) {
         game = data;
     });
