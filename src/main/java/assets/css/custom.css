@@ -72,13 +72,14 @@ td:hover {
     background-color: gray;
 }
 
-.occupied {
-    background-color: black !important;
-}
-
+/* this should go before occupied, hits, sink, missed... */
 .disabled {
     background-color: gray;
     pointer-events: none;
+}
+
+.occupied {
+    background-color: black;
 }
 
 .hit {
@@ -218,33 +219,13 @@ td:hover {
     display: flex;
 }
 
-.opponent-result {
+.player-result {
     background-color: #eaeaea;
     border: 1px solid black;
     margin-right: 320px;
     width: 300px;
     text-align: center;
     line-height: 60px;
-    text-transform: capitalize
-}
-
-.opponent-result[data-result="hit"] {
-    background-color: orange;
-    color: white;
-}
-
-.opponent-result[data-result="-"] {
-    color: black;
-}
-
-.player-result {
-    background-color: #eaeaea;
-    border: 1px solid black;
-    margin-left: 320px;
-    width: 300px;
-    text-align: center;
-    line-height: 60px;
-    text-transform: capitalize
 }
 
 .player-result[data-result="hit"] {
@@ -253,5 +234,23 @@ td:hover {
 }
 
 .player-result[data-result="-"] {
+    color: black;
+}
+
+.opponent-result {
+    background-color: #eaeaea;
+    border: 1px solid black;
+    margin-left: 320px;
+    width: 300px;
+    text-align: center;
+    line-height: 60px;
+}
+
+.opponent-result[data-result="hit"] {
+    background-color: orange;
+    color: white;
+}
+
+.opponent-result[data-result="-"] {
     color: black;
 }
