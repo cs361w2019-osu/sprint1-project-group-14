@@ -75,6 +75,10 @@ td:hover {
     background-color: black;
 }
 
+.disabled {
+    background-color: gray;
+}
+
 .hit {
     background-color: orange;
 }
@@ -101,4 +105,11 @@ td:hover {
 #playerHeading, #opponentHeading {
     writing-mode: vertical-rl;
     text-orientation: upright;
+}
+.heading {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 40px;
+    width: 40%;
 }

@@ -1,10 +1,11 @@
 var isSetup = true;
+var isPlayerTurn = true;
 var placedShips = 0;
 var game;
 var shipType;
 var vertical;
 
-function makeGrid(table, isPlayer) {
+function makeGrid(table) {
     for (i=0; i<10; i++) {
         let row = document.createElement('tr');
         for (j=0; j<10; j++) {
@@ -31,20 +32,41 @@ function markHits(board, elementId, surrenderText) {
     });
 }
 
-function redrawGrid() {
-    Array.from(document.getElementById("opponent").childNodes).forEach((row) => row.remove());
-    Array.from(document.getElementById("player").childNodes).forEach((row) => row.remove());
-    makeGrid(document.getElementById("opponent"), false);
-    makeGrid(document.getElementById("player"), true);
+function disableGrid(grid) {
+    for (i=0; i<10; i++) {
+        for (j=0; j<10; j++) {
+            if (grid.rows[i].cells[j].classList.length == 0) {
+                grid.rows[i].cells[j].classList.add("disabled");
+            }
+        }
+    }
+}
+
+function enableGrid(grid) {
+    for (i=0; i<10; i++) {
+        for (j=0; j<10; j++) {
+            if (grid.rows[i].cells[j].classList.contains("disabled")) {
+                grid.rows[i].cells[j].classList.remove("disabled");
+            }
+        }
+    }
+}
+
+function redrawGrid(person) {
+    Array.from(document.getElementById(person).childNodes).forEach((row) => row.remove());
+    makeGrid(document.getElementById(person));
+
     if (game === undefined) {
         return;
     }
-
-    game.playersBoard.ships.forEach((ship) => ship.occupiedSquares.forEach((square) => {
-        document.getElementById("player").rows[square.row-1].cells[square.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add("occupied");
-    }));
-    markHits(game.opponentsBoard, "opponent", "You won the game");
-    markHits(game.playersBoard, "player", "You lost the game");
+    if (person === "player") {
+        game.playersBoard.ships.forEach((ship) => ship.occupiedSquares.forEach((square) => {
+            document.getElementById("player").rows[square.row-1].cells[square.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add("occupied");
+        }));
+        markHits(game.playersBoard, person, "You lost the game");
+    } else {
+        markHits(game.opponentsBoard, person, "You won the game");
+    }
 }
 
 var oldListener;
@@ -74,30 +96,60 @@ function cellClick() {
     if (isSetup) {
         sendXhr("POST", "/place", {game: game, shipType: shipType, x: row, y: col, isVertical: vertical}, function(data) {
             game = data;
-            redrawGrid();
             placedShips++;
+            redrawGrid("player");
+            redrawGrid("opponent");
             if (placedShips == 3) {
                 isSetup = false;
                 registerCellListener((e) => {});
             }
             document.getElementById(playerShipsMap[shipType]).dataset.placed = "true";
+
+            disableGrid(document.getElementById("player"));
+            enableGrid(document.getElementById("opponent"));
+            isPlayerTurn = false;
+
             window.setTimeout(function() {
                 document.getElementById(opponentShipsMap[shipType]).dataset.placed = "true";
-            }, 500);
+                document.getElementById(opponentShipsMap[shipType]).classList.remove("disabled");
+                if (isSetup) {
+                    disableGrid(document.getElementById("opponent"));
+                    enableGrid(document.getElementById("player"));
+                }
+                isPlayerTurn = true;
+            }, 1000);
         });
-    } else {
+    } else if (isPlayerTurn){
         sendXhr("POST", "/attack", {game: game, x: row, y: col}, function(data) {
             game = data;
-            redrawGrid();
+
+            redrawGrid("opponent");
+            isPlayerTurn = false
+            disableGrid(document.getElementById("opponent"));
+            enableGrid(document.getElementById("player"))
+            window.setTimeout(function(){
+                redrawGrid("player");
+                isPlayerTurn = true
+                disableGrid(document.getElementById("player"))
+                enableGrid(document.getElementById("opponent"))
+            }, 1000);
         })
     }
+}
+
+function redBlink(grid) {
+    grid.style.border = "2px solid red";
+    window.setTimeout(function(){
+        grid.style.border = "1px solid black";
+    }, 200);
 }
 
 function sendXhr(method, url, data, handler) {
     var req = new XMLHttpRequest();
     req.addEventListener("load", function(event) {
         if (req.status != 200) {
-            alert("Cannot complete the action");
+            redBlink(document.getElementById('player'));
+            redBlink(document.getElementById('opponent'));
             return;
         }
         handler(JSON.parse(req.responseText));
@@ -139,6 +191,9 @@ function initGame() {
     makeGrid(document.getElementById("opponent"), false);
     makeGrid(document.getElementById("player"), true);
     document.getElementById("place_minesweeper").addEventListener("click", function(e) {
+        if (!isPlayerTurn) {
+            return
+        }
         shipType = "MINESWEEPER";
         let s = document.getElementById("place_minesweeper");
         p_ships.forEach(function(ship) {
@@ -147,13 +202,18 @@ function initGame() {
                 s.dataset.selected = "false";
             };
         });
-        s.dataset.selected = "true";
+
+        s.dataset.selected = true;
+
 
         if (s.dataset.placed == "false") {
             registerCellListener(place(2));
         }
     });
     document.getElementById("place_destroyer").addEventListener("click", function(e) {
+        if (!isPlayerTurn) {
+            return
+        }
         shipType = "DESTROYER";
         let s = document.getElementById("place_destroyer");
         p_ships.forEach(function(ship) {
@@ -164,11 +224,14 @@ function initGame() {
         });
         s.dataset.selected = "true";
 
-        if (s.dataset.placed == "false") {
+        if (s.dataset.placed == "false" && isPlayerTurn) {
             registerCellListener(place(3));
         }
     });
     document.getElementById("place_battleship").addEventListener("click", function(e) {
+        if (!isPlayerTurn) {
+            return
+        }
         shipType = "BATTLESHIP";
         let s = document.getElementById("place_battleship");
         p_ships.forEach(function(ship) {
@@ -179,7 +242,7 @@ function initGame() {
         });
         s.dataset.selected = "true";
 
-        if (s.dataset.placed == "false") {
+        if (s.dataset.placed == "false" && isPlayerTurn) {
             registerCellListener(place(4));
         }
     });
@@ -193,6 +256,7 @@ function initGame() {
             b.dataset.toggled = "true";
         };
     });
+    disableGrid(document.getElementById("opponent"));
     sendXhr("GET", "/game", {}, function(data) {
         game = data;
     });
