@@ -119,6 +119,7 @@ function cellClick() {
             enableGrid(document.getElementById("opponent"));
             isPlayerTurn = false;
 
+            statusBar.innerText = "Opponent placing ship.";
             window.setTimeout(function() {
                 document.getElementById(opponentShipsMap[shipType]).dataset.placed = "true";
                 document.getElementById(opponentShipsMap[shipType]).classList.remove("disabled");
@@ -127,6 +128,9 @@ function cellClick() {
                     enableGrid(document.getElementById("player"));
                 }
                 isPlayerTurn = true;
+                if (isSetup) {
+                    statusBar.innerText = "Place your ship.";
+                }
             }, 1000);
 
             if (game.playersBoard.ships.length === 3) {
