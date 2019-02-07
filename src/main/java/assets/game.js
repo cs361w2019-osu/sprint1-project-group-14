@@ -4,6 +4,7 @@ var placedShips = 0;
 var game;
 var shipType;
 var vertical;
+var statusBar = document.getElementsByClassName("status-bar")[0];
 
 function makeGrid(table) {
     for (i=0; i<10; i++) {
@@ -29,15 +30,24 @@ function markHits(board, elementId, surrenderText) {
         else if (attack.result === "SURRENDER")
             alert(surrenderText);
         document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add(className);
+        markActionBar(elementId, className);
     });
+}
+
+function markActionBar(person, result) {
+    document.getElementsByClassName(person+"-result")[0].dataset.result = result;
+    document.getElementsByClassName(person+"-result")[0].innerHTML = result;
+}
+
+function fillStatusBar() {
+
 }
 
 function disableGrid(grid) {
     for (i=0; i<10; i++) {
         for (j=0; j<10; j++) {
-            if (grid.rows[i].cells[j].classList.length == 0) {
+            //remove the condition to make sure all the cell is disabled.
                 grid.rows[i].cells[j].classList.add("disabled");
-            }
         }
     }
 }
@@ -96,7 +106,7 @@ function cellClick() {
     if (isSetup) {
         sendXhr("POST", "/place", {game: game, shipType: shipType, x: row, y: col, isVertical: vertical}, function(data) {
             game = data;
-            placedShips++;
+            placedShips++;        
             redrawGrid("player");
             redrawGrid("opponent");
             if (placedShips == 3) {
@@ -118,6 +128,10 @@ function cellClick() {
                 }
                 isPlayerTurn = true;
             }, 1000);
+
+            if (game.playersBoard.ships.length === 3) {
+                statusBar.innerText = "Player's turn.";
+            }
         });
     } else if (isPlayerTurn){
         sendXhr("POST", "/attack", {game: game, x: row, y: col}, function(data) {
@@ -125,11 +139,13 @@ function cellClick() {
 
             redrawGrid("opponent");
             isPlayerTurn = false
+            statusBar.innerText = "opponent's turn.";
             disableGrid(document.getElementById("opponent"));
             enableGrid(document.getElementById("player"))
             window.setTimeout(function(){
                 redrawGrid("player");
                 isPlayerTurn = true
+                statusBar.innerText = "Player's turn.";
                 disableGrid(document.getElementById("player"))
                 enableGrid(document.getElementById("opponent"))
             }, 1000);
@@ -137,8 +153,19 @@ function cellClick() {
     }
 }
 
+function blinkInvalid() {
+    statusBar.dataset.invalid = "true";
+    let oldText = statusBar.innerText;
+    statusBar.innerText = "Invalid Operation";
+    window.setTimeout(function() {
+        statusBar.innerText = oldText;
+        statusBar.dataset.invalid = "false";
+    }, 500);
+}
+
 function redBlink(grid) {
     grid.style.border = "2px solid red";
+    markActionBar(grid.getAttribute("id"), "-");
     window.setTimeout(function(){
         grid.style.border = "1px solid black";
     }, 200);
@@ -150,6 +177,7 @@ function sendXhr(method, url, data, handler) {
         if (req.status != 200) {
             redBlink(document.getElementById('player'));
             redBlink(document.getElementById('opponent'));
+            blinkInvalid();
             return;
         }
         handler(JSON.parse(req.responseText));
@@ -190,6 +218,7 @@ function initGame() {
     let p_ships = ["place_minesweeper", "place_destroyer", "place_battleship"];
     makeGrid(document.getElementById("opponent"), false);
     makeGrid(document.getElementById("player"), true);
+    statusBar.innerText = "Place your ship.";
     document.getElementById("place_minesweeper").addEventListener("click", function(e) {
         if (!isPlayerTurn) {
             return
