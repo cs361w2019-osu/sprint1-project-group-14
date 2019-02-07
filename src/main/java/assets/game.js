@@ -119,7 +119,7 @@ function cellClick() {
     if (isSetup) {
         sendXhr("POST", "/place", {game: game, shipType: shipType, x: row, y: col, isVertical: vertical}, function(data) {
             game = data;
-            placedShips++;        
+            placedShips++;
             redrawGrid("player");
             redrawGrid("opponent");
             if (placedShips == 3) {
@@ -139,16 +139,15 @@ function cellClick() {
                 if (isSetup) {
                     disableGrid(document.getElementById("opponent"));
                     enableGrid(document.getElementById("player"));
+                    statusBar.innerText = "Place your ship.";
                 }
                 isPlayerTurn = true;
-                if (isSetup) {
-                    statusBar.innerText = "Place your ship.";
+                if (game.playersBoard.ships.length === 3) {
+                    statusBar.innerText = "Player's turn.";
                 }
             }, 1000);
 
-            if (game.playersBoard.ships.length === 3) {
-                statusBar.innerText = "Player's turn.";
-            }
+
         });
     } else if (isPlayerTurn){
         sendXhr("POST", "/attack", {game: game, x: row, y: col}, function(data) {
