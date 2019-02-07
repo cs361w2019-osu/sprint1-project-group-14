@@ -17,14 +17,10 @@
 }
 
 #is_vertical, #alignment {
-    width: 120px;
-    height: 30px;
+    width:240px
     margin: 10px;
 }
 
-#is_vertical {
-    border: 1px solid black;
-}
 
 .ships {
     display: flex;
