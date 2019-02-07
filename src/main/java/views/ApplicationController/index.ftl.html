@@ -10,8 +10,8 @@
     </h1>
     <table id="player" class="battleGrid">
     </table>
-    <div class="ships">
-        <button id="is_vertical" data-toggled="false">Mode: Horizontal</button>
+    <div class="ships" id="board_plane">
+        <button class="button button-royal button-rounded" id="is_vertical" data-toggled="false">Mode: Horizontal</button>
         <table class="ship" id="place_minesweeper" data-selected="false" data-placed="false">
             <tr>
                 <td></td>
@@ -38,7 +38,7 @@
     <div class="barrier">
     </div>
 
-    <div class="ships">
+    <div class="ships" id="board_plane">
         <!-- Fake Button -->
         <div id="alignment"></div>
         <table class="ship disabled" id="opponent_minesweeper" data-placed="false">
