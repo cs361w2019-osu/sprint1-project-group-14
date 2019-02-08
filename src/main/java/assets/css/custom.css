@@ -211,6 +211,16 @@ td:hover {
 
 }
 
+.status-bar[data-winner="true"] {
+    background-color: green;
+    color: white;
+}
+
+.status-bar[data-loser="true"] {
+    background-color: red;
+    color: white;
+}
+
 .bottom-status {
     margin: 20px auto auto;
     height: 60px;

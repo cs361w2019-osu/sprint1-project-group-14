@@ -1,5 +1,6 @@
 var isSetup = true;
 var isPlayerTurn = true;
+var gameOver = 0;
 var placedShips = 0;
 var game;
 var shipType;
@@ -18,7 +19,8 @@ function makeGrid(table) {
     }
 }
 
-function markHits(board, elementId, surrenderText) {
+function markHits(board, elementId, surrenderNum) {
+    var surrender = 0;
     board.attacks.forEach((attack) => {
         let className;
         if (attack.result === "MISS")
@@ -26,12 +28,15 @@ function markHits(board, elementId, surrenderText) {
         else if (attack.result === "HIT")
             className = "hit";
         else if (attack.result === "SUNK")
-            className = "hit"
-        else if (attack.result === "SURRENDER")
-            alert(surrenderText);
+            className = "hit";
+        else if (attack.result === "SURRENDER") {
+            className = "hit";
+            surrender = surrenderNum;
+        }
         document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add(className);
         markActionBar(elementId, className);
     });
+    return surrender;
 }
 
 function markActionBar(person, result) {
@@ -50,10 +55,6 @@ function markActionBar(person, result) {
 
     document.getElementsByClassName(person+"-result")[0].dataset.result = result;
     document.getElementsByClassName(person+"-result")[0].innerHTML = actionStatus;
-}
-
-function fillStatusBar() {
-
 }
 
 function disableGrid(grid) {
@@ -86,9 +87,9 @@ function redrawGrid(person) {
         game.playersBoard.ships.forEach((ship) => ship.occupiedSquares.forEach((square) => {
             document.getElementById("player").rows[square.row-1].cells[square.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add("occupied");
         }));
-        markHits(game.playersBoard, person, "You lost the game");
+        gameOver = markHits(game.playersBoard, person, 1);
     } else {
-        markHits(game.opponentsBoard, person, "You won the game");
+        gameOver = markHits(game.opponentsBoard, person, 2);
     }
 }
 
@@ -105,6 +106,38 @@ function registerCellListener(f) {
         }
     }
     oldListener = f;
+}
+
+function playerWins() {
+    redrawGrid("opponent");
+    disableGrid(document.getElementById("opponent"));
+    disableGrid(document.getElementById("player"))
+    statusBar.innerText = "Player Wins";
+    statusBar.dataset.winner = 'true';
+}
+
+function playerLost() {
+    redrawGrid("player");
+    disableGrid(document.getElementById("player"));
+    disableGrid(document.getElementById("opponent"));
+    statusBar.innerText = "Opponent Wins";
+    statusBar.dataset.loser = 'true';
+}
+
+function endPlayerTurn() {
+    redrawGrid("opponent");
+    isPlayerTurn = false
+    statusBar.innerText = "Opponent attacks.";
+    disableGrid(document.getElementById("opponent"));
+    enableGrid(document.getElementById("player"))
+}
+
+function endOpponentTurn() {
+    redrawGrid("player");
+    isPlayerTurn = true
+    statusBar.innerText = "Player attacks.";
+    disableGrid(document.getElementById("player"))
+    enableGrid(document.getElementById("opponent"))
 }
 
 function cellClick() {
@@ -129,8 +162,13 @@ function cellClick() {
             document.getElementById(playerShipsMap[shipType]).dataset.placed = "true";
 
             disableGrid(document.getElementById("player"));
-            enableGrid(document.getElementById("opponent"));
             isPlayerTurn = false;
+
+            if (!isSetup) {
+                disableGrid(document.getElementById("opponent"))
+            } else {
+                enableGrid(document.getElementById("opponent"));
+            }
 
             statusBar.innerText = "Opponent placing ship.";
             window.setTimeout(function() {
@@ -140,11 +178,11 @@ function cellClick() {
                     disableGrid(document.getElementById("opponent"));
                     enableGrid(document.getElementById("player"));
                     statusBar.innerText = "Place your ship.";
+                } else {
+                    statusBar.innerText = "Player attacks.";
+                    enableGrid(document.getElementById("opponent"))
                 }
                 isPlayerTurn = true;
-                if (game.playersBoard.ships.length === 3) {
-                    statusBar.innerText = "Player's turn.";
-                }
             }, 1000);
 
 
@@ -152,19 +190,17 @@ function cellClick() {
     } else if (isPlayerTurn){
         sendXhr("POST", "/attack", {game: game, x: row, y: col}, function(data) {
             game = data;
-
-            redrawGrid("opponent");
-            isPlayerTurn = false
-            statusBar.innerText = "opponent's turn.";
-            disableGrid(document.getElementById("opponent"));
-            enableGrid(document.getElementById("player"))
-            window.setTimeout(function(){
-                redrawGrid("player");
-                isPlayerTurn = true
-                statusBar.innerText = "Player's turn.";
-                disableGrid(document.getElementById("player"))
-                enableGrid(document.getElementById("opponent"))
-            }, 1000);
+            endPlayerTurn()
+            if (gameOver === 0) {
+                window.setTimeout(function(){
+                    endOpponentTurn()
+                    if (gameOver === 1) {
+                        playerLost()
+                    }
+                }, 1000);
+            } else if(gameOver === 2){
+                playerWins()
+            }
         })
     }
 }
