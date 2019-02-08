@@ -204,6 +204,7 @@ td:hover {
     text-align: center;
     line-height: 40px;
     text-transform: capitalize;
+    font-family: 'Arvo', serif;
 }
 
 .status-bar[data-invalid="true"] {
@@ -227,15 +228,18 @@ td:hover {
     width: 300px;
     text-align: center;
     line-height: 60px;
+     font-family: 'Arvo', serif;
 }
 
 .player-result[data-result="hit"] {
     background-color: orange;
     color: white;
+     font-family: 'Arvo', serif;
 }
 
 .player-result[data-result="-"] {
     color: black;
+     font-family: 'Arvo', serif;
 }
 
 .opponent-result {
@@ -245,13 +249,16 @@ td:hover {
     width: 300px;
     text-align: center;
     line-height: 60px;
+     font-family: 'Arvo', serif;
 }
 
 .opponent-result[data-result="hit"] {
     background-color: orange;
     color: white;
+     font-family: 'Arvo', serif;
 }
 
 .opponent-result[data-result="-"] {
     color: black;
+     font-family: 'Arvo', serif;
 }
