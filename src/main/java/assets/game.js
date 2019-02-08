@@ -143,7 +143,7 @@ function playerLost() {
 function endPlayerTurn() {
     redrawGrid("opponent");
     isPlayerTurn = false
-    statusBar.innerText = "Opponent attacks.";
+    statusBar.innerText = "Opponent's turn to attack.";
     disableGrid(document.getElementById("opponent"));
     enableGrid(document.getElementById("player"))
 }
@@ -151,7 +151,7 @@ function endPlayerTurn() {
 function endOpponentTurn() {
     redrawGrid("player");
     isPlayerTurn = true
-    statusBar.innerText = "Player attacks.";
+    statusBar.innerText = "Attack your opponent.";
     disableGrid(document.getElementById("player"))
     enableGrid(document.getElementById("opponent"))
 }
@@ -189,7 +189,7 @@ function cellClick() {
                     enableGrid(document.getElementById("player"));
                     statusBar.innerText = "Place your ship.";
                 } else {
-                    statusBar.innerText = "Player attacks.";
+                    statusBar.innerText = "Attack your opponent.";
                     enableGrid(document.getElementById("opponent"))
                 }
                 isPlayerTurn = true;
@@ -346,6 +346,9 @@ function initGame() {
             b.innerHTML = "Mode: Vertical"
             b.dataset.toggled = "true";
         };
+    });
+    document.getElementById("reset").addEventListener("click", function(e) {
+        window.location.reload(false);
     });
     disableGrid(document.getElementById("opponent"));
     sendXhr("GET", "/game", {}, function(data) {
