@@ -19,7 +19,7 @@
     margin-bottom:10px;
 }
 #is_vertical, #alignment {
-    width:240px
+    width:240px;
     margin: 10px;
 }
 #board_plane{
@@ -72,12 +72,14 @@ td:hover {
     background-color: gray;
 }
 
-.occupied {
-    background-color: black;
-}
-
+/* this should go before occupied, hits, sink, missed... */
 .disabled {
     background-color: gray;
+    pointer-events: none;
+}
+
+.occupied {
+    background-color: black;
 }
 
 .hit {
@@ -189,4 +191,66 @@ td:hover {
     margin-right: auto;
     margin-bottom: 40px;
     width: 40%;
+}
+
+.status-bar {
+    background: #eaeaea;
+    border: 1px solid black;
+    height: 40px;
+    width: 50%;
+    margin: auto auto 15px auto;
+    left: 0; right: 0;
+    text-align: center;
+    line-height: 40px;
+    text-transform: capitalize;
+}
+
+.status-bar[data-invalid="true"] {
+    background-color: red;
+    color: white;
+
+}
+
+.bottom-status {
+    margin: 20px auto auto;
+    height: 60px;
+    width: 55%;
+    min-width: 1245px;
+    display: flex;
+}
+
+.player-result {
+    background-color: #eaeaea;
+    border: 1px solid black;
+    margin-right: 320px;
+    width: 300px;
+    text-align: center;
+    line-height: 60px;
+}
+
+.player-result[data-result="hit"] {
+    background-color: orange;
+    color: white;
+}
+
+.player-result[data-result="-"] {
+    color: black;
+}
+
+.opponent-result {
+    background-color: #eaeaea;
+    border: 1px solid black;
+    margin-left: 320px;
+    width: 300px;
+    text-align: center;
+    line-height: 60px;
+}
+
+.opponent-result[data-result="hit"] {
+    background-color: orange;
+    color: white;
+}
+
+.opponent-result[data-result="-"] {
+    color: black;
 }
