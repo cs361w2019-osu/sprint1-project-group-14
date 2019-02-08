@@ -7,6 +7,13 @@ var shipType;
 var vertical;
 var statusBar = document.getElementsByClassName("status-bar")[0];
 
+var playerShipsMap = {"MINESWEEPER" : "place_minesweeper",
+                      "DESTROYER"   : "place_destroyer",
+                      "BATTLESHIP"  : "place_battleship"};
+var opponentShipsMap = {"MINESWEEPER" : "opponent_minesweeper",
+                        "DESTROYER"   : "opponent_destroyer",
+                        "BATTLESHIP"  : "opponent_battleship"};
+
 function makeGrid(table) {
     for (i=0; i<10; i++) {
         let row = document.createElement('tr');
@@ -28,9 +35,9 @@ function markHits(board, elementId, surrenderNum) {
         else if (attack.result === "HIT")
             className = "hit";
         else if (attack.result === "SUNK")
-            className = "hit";
+            className = "sunk";
         else if (attack.result === "SURRENDER") {
-            className = "hit";
+            className = "sunk";
             surrender = surrenderNum;
         }
         document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add(className);
@@ -40,21 +47,20 @@ function markHits(board, elementId, surrenderNum) {
 }
 
 function markActionBar(person, result) {
+    personUpper = person.replace(/\b\w/g, function(l){ return l.toUpperCase() })
+
     if (result === "miss") {
-        resultStatus = "missed"
+        resultStatus = personUpper + " missed.";
+    } else if (result == "hit") {
+        resultStatus = personUpper + " was hit.";
+    } else if (result == "sunk") {
+        resultStatus = personUpper + "'s ship sunk.";
     } else {
-        resultStatus = result;
+        resultStatus = "-";
     };
 
-    if (result) {
-        actionStatus = person.replace(/\b\w/g, function(l){ return l.toUpperCase() }) + " was " + resultStatus + ".";
-    } else {
-        result = "-"
-        actionStatus = "-";
-    }
-
     document.getElementsByClassName(person+"-result")[0].dataset.result = result;
-    document.getElementsByClassName(person+"-result")[0].innerHTML = actionStatus;
+    document.getElementsByClassName(person+"-result")[0].innerHTML = resultStatus;
 }
 
 function disableGrid(grid) {
@@ -91,6 +97,16 @@ function redrawGrid(person) {
     } else {
         gameOver = markHits(game.opponentsBoard, person, 2);
     }
+
+    game[person+'sBoard']['sunkShips'].forEach(function(s) {
+        var e;
+        if (person == "player") {
+            e = playerShipsMap[s.shipName];
+        } else {
+            e = opponentShipsMap[s.shipName];
+        }
+        document.getElementById(e).dataset.sunk = "true";
+    })
 }
 
 var oldListener;
@@ -141,12 +157,6 @@ function endOpponentTurn() {
 }
 
 function cellClick() {
-    let playerShipsMap = {"MINESWEEPER" : "place_minesweeper",
-                          "DESTROYER"   : "place_destroyer",
-                          "BATTLESHIP"  : "place_battleship"};
-    let opponentShipsMap = {"MINESWEEPER" : "opponent_minesweeper",
-                            "DESTROYER"   : "opponent_destroyer",
-                            "BATTLESHIP"  : "opponent_battleship"};
     let row = this.parentNode.rowIndex + 1;
     let col = String.fromCharCode(this.cellIndex + 65);
     if (isSetup) {

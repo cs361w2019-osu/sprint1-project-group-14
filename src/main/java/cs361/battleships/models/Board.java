@@ -127,6 +127,7 @@ public class Board {
         // If all squares of ship hit it is considered sunk.
         if (outcome.getResult() == HIT && hitCount == outcome.getShip().getLength() - 1) {
             outcome.setResult(SUNK);
+			setSunkShipStatus(outcome.getShip());
             sunkShips.add(outcome.getShip());
         }
 
@@ -139,6 +140,16 @@ public class Board {
         attacks.add(outcome);
 
         return outcome;
+	}
+
+	private void setSunkShipStatus(Ship s) {
+		List<Square> occupied = s.getOccupiedSquares();
+
+		for (Result r : attacks) {
+			if (occupied.contains(r.getLocation())) {
+				r.setResult(SUNK);
+			}
+		}
 	}
 
 	/**
