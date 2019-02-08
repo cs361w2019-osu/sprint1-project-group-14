@@ -127,7 +127,7 @@ public class Board {
         // If all squares of ship hit it is considered sunk.
         if (outcome.getResult() == HIT && hitCount == outcome.getShip().getLength() - 1) {
             outcome.setResult(SUNK);
-			setSunkShipStatus(outcome.getShip());
+            setSunkShipStatus(outcome.getShip());
             sunkShips.add(outcome.getShip());
         }
 
