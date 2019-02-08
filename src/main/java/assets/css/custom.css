@@ -15,13 +15,71 @@
     border: 1px solid black;
     width: 30px;
 }
+#is_vertical{
+    margin-bottom:10px;
+}
+#is_vertical, #alignment {
+    width:240px;
+    margin: 10px;
+}
+#board_plane{
+    width:240px;
+}
 
-td:hover {
+.ships {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 30px;
+}
+
+.ship {
+    border: 1px solid black;
+    border-spacing: 0px;
+
+    margin: 10px;
+}
+
+.ship tr {
+    border: 1px solid black;
+    height: 30px;
+}
+
+.ship td {
+    border: 1px solid black;
+    width: 30px;
+}
+
+
+.ship[data-selected="true"] {
+    background-color: blue;
+}
+
+.ship:hover {
+    background-color: gray;
+}
+
+.ship[data-placed="true"] {
+    background-color: black;
+}
+
+.ship[data-sunk="true"] {
+    background-color: red;
+}
+
+.battleGrid td:hover {
     background-color: gray;
 }
 
 .placed {
     background-color: gray;
+}
+
+/* this should go before occupied, hits, sink, missed... */
+.disabled {
+    background-color: gray;
+    pointer-events: none;
 }
 
 .occupied {
@@ -32,10 +90,185 @@ td:hover {
     background-color: orange;
 }
 
-.sink {
+.sunk {
     background-color: red;
 }
 
 .miss {
     background-color: blue;
+}
+
+.mainGame, .playerSide {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.barrier {
+    border: 1px solid black;
+    height: 300px;
+}
+
+#playerHeading, #opponentHeading {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    font-family: 'Staatliches', cursive;
+}
+
+#alignment {
+  height: 48px;
+}
+
+.button {
+  color: #666;
+  background-color: #EEE;
+  border-color: #EEE;
+  font-weight: 300;
+  font-size: 16px;
+  font-family: "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  text-decoration: none;
+  text-align: center;
+  line-height: 40px;
+  height: 40px;
+  padding: 0 40px;
+  margin: 0;
+  display: inline-block;
+  appearance: none;
+  cursor: pointer;
+  border: none;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  -webkit-transition-property: all;
+          transition-property: all;
+  -webkit-transition-duration: .3s;
+          transition-duration: .3s;
+}
+
+.button-royal,
+.button-royal-flat {
+  background-color: #7B72E9;
+  border-color: #7B72E9;
+  color: #FFF; }
+  .button-royal:visited,
+  .button-royal-flat:visited {
+    color: #FFF; }
+  .button-royal:hover, .button-royal:focus,
+  .button-royal-flat:hover,
+  .button-royal-flat:focus {
+    background-color: #a49ef0;
+    border-color: #a49ef0;
+    color: #FFF; }
+  .button-royal:active, .button-royal.active, .button-royal.is-active,
+  .button-royal-flat:active,
+  .button-royal-flat.active,
+  .button-royal-flat.is-active {
+    background-color: #827ae1;
+    border-color: #827ae1;
+    color: #5246e2;
+    }
+
+  .button-rounded {
+      border-radius: 4px;
+  }
+
+.heading {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 40px;
+    width: 40%;
+}
+
+.status-bar {
+    background: #eaeaea;
+    border: 1px solid black;
+    height: 40px;
+    width: 50%;
+    margin: auto auto 15px auto;
+    left: 0; right: 0;
+    text-align: center;
+    line-height: 40px;
+    font-weight: 300;
+    font-size: 16px;
+    font-family: "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+}
+
+.status-bar[data-invalid="true"] {
+    background-color: red;
+    color: white;
+
+}
+
+.status-bar[data-winner="true"] {
+    background-color: green;
+    color: white;
+}
+
+.status-bar[data-loser="true"] {
+    background-color: red;
+    color: white;
+}
+
+.bottom-status {
+    margin: 20px 135px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 300;
+    font-size: 16px;
+    font-family: "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+}
+
+.player-result {
+    background-color: #eaeaea;
+    border: 1px solid black;
+    width: 300px;
+    height: 60px;
+    text-align: center;
+    line-height: 60px;
+}
+
+.player-result[data-result="hit"] {
+    background-color: orange;
+    color: white;
+}
+
+.player-result[data-result="sunk"] {
+    background-color: red;
+    color: white;
+}
+
+.player-result[data-result="-"] {
+    color: black;
+}
+
+.opponent-result {
+    background-color: #eaeaea;
+    border: 1px solid black;
+    width: 300px;
+    height: 60px;
+    text-align: center;
+    line-height: 60px;
+}
+
+.opponent-result[data-result="hit"] {
+    background-color: orange;
+    color: white;
+}
+
+.opponent-result[data-result="sunk"] {
+    background-color: red;
+    color: white;
+}
+
+.opponent-result[data-result="-"] {
+    color: black;
+}
+
+#reset {
+    background-color: red;
+    color: white;
+    border-radius: 4px;
 }

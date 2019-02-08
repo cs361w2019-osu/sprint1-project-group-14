@@ -2,21 +2,83 @@
 <@layout.myLayout "Home page">    
 
 
-<h1>The Battleship game</h1>
+<img class="heading" src="../../assets/logo2.PNG"/>
 
-<table id="opponent" class="battleGrid">
-</table>
+<div class="status-bar"></div>
 
-<table id="player" class="battleGrid">
-</table>
+<div class="mainGame">
+    <h1 id="playerHeading">
+        PLAYER
+    </h1>
+    <table id="player" class="battleGrid">
+    </table>
+    <div class="ships" id="board_plane">
+        <button class="button button-royal button-rounded" id="is_vertical" data-toggled="false">Mode: Horizontal</button>
+        <table class="ship" id="place_minesweeper" data-sunk="false" data-selected="false" data-placed="false">
+            <tr>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+        <table class="ship" id="place_destroyer" data-sunk="false" data-selected="false" data-placed="false">
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+        <table class="ship" id="place_battleship" data-sunk="false" data-selected="false" data-placed="false">
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
 
-<ul>
-    <li><button id="place_minesweeper">Place Minesweeper</button></li>
-    <li><button id="place_destroyer">Place Destroyer</button></li>
-    <li><button id="place_battleship">Place Battleship</button></li>
-    <li><input type="checkbox" id="is_vertical">Vertical</input></li>
-</ul>
+    <div class="barrier">
+    </div>
 
+    <div class="ships" id="board_plane">
+        <!-- Fake Button -->
+        <div id="alignment"></div>
+        <table class="ship disabled" id="opponent_minesweeper" data-sunk="false" data-placed="false">
+            <tr>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+        <table class="ship disabled" id="opponent_destroyer" data-sunk="false" data-placed="false">
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+        <table class="ship disabled" id="opponent_battleship" data-sunk="false" data-placed="false">
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+    <table id="opponent" class="battleGrid">
+    </table>
+    <h1 id="opponentHeading">
+        OPPONENT
+    </h1>
+</div>
+
+<div class="bottom-status">
+    <div class="player-result">
+    </div>
+    <button id="reset" class="button" data-toggled="false">Reset</button>
+    <div class="opponent-result">
+    </div>
+</div>
 <script type="text/javascript" src="/assets/game.js"></script>
 <script>
     initGame();
