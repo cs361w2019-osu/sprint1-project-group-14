@@ -108,6 +108,7 @@ td:hover {
 #playerHeading, #opponentHeading {
     writing-mode: vertical-rl;
     text-orientation: upright;
+    font-family: 'Staatliches', cursive;
 }
 
 #alignment {
