@@ -56,6 +56,10 @@
     background-color: blue;
 }
 
+.ship:hover {
+    background-color: gray;
+}
+
 .ship[data-placed="true"] {
     background-color: black;
 }
@@ -64,11 +68,7 @@
     background-color: red;
 }
 
-.ship:hover {
-    background-color: gray;
-}
-
-td:hover {
+.battleGrid td:hover {
     background-color: gray;
 }
 
