@@ -347,6 +347,9 @@ function initGame() {
             b.dataset.toggled = "true";
         };
     });
+    document.getElementById("reset").addEventListener("click", function(e) {
+        window.location.reload(false);
+    });
     disableGrid(document.getElementById("opponent"));
     sendXhr("GET", "/game", {}, function(data) {
         game = data;
