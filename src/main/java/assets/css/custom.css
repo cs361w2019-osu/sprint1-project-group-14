@@ -56,15 +56,19 @@
     background-color: blue;
 }
 
-.ship[data-placed="true"] {
-    background-color: red;
-}
-
 .ship:hover {
     background-color: gray;
 }
 
-td:hover {
+.ship[data-placed="true"] {
+    background-color: black;
+}
+
+.ship[data-sunk="true"] {
+    background-color: red;
+}
+
+.battleGrid td:hover {
     background-color: gray;
 }
 
@@ -86,7 +90,7 @@ td:hover {
     background-color: orange;
 }
 
-.sink {
+.sunk {
     background-color: red;
 }
 
@@ -244,6 +248,11 @@ td:hover {
     color: white;
 }
 
+.player-result[data-result="sunk"] {
+    background-color: red;
+    color: white;
+}
+
 .player-result[data-result="-"] {
     color: black;
 }
@@ -259,6 +268,11 @@ td:hover {
 
 .opponent-result[data-result="hit"] {
     background-color: orange;
+    color: white;
+}
+
+.opponent-result[data-result="sunk"] {
+    background-color: red;
     color: white;
 }
 
