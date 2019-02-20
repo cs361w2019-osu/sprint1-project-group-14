@@ -194,8 +194,11 @@ function cellClick() {
                 }
                 isPlayerTurn = true;
             }, 1000);
-
-
+        });
+    } else if (isPlayerTurn && document.getElementById("sonar_pulse").dataset.toggled === "true") {
+        sendXhr("POST", "/sonar", {game: game, x: row, y: col}, function(data) {
+            game = data
+            sonarPulse(col, row, game, "opponent");
         });
     } else if (isPlayerTurn){
         sendXhr("POST", "/attack", {game: game, x: row, y: col}, function(data) {
@@ -212,6 +215,25 @@ function cellClick() {
                 playerWins()
             }
         })
+    }
+}
+function sonarPulse(col, row, game, target) {
+    var lcol = col.charCodeAt(0) - 'A'.charCodeAt(0)
+
+    game.opponentsBoard.ships.forEach((ship) => ship.occupiedSquares.forEach((square) => {
+        var rcol = square.column.charCodeAt(0) - 'A'.charCodeAt(0)
+        if ((row <= square.row + 1 && row >= square.row - 1) &&
+            ((lcol >= rcol - 1) && (lcol <= rcol + 1))) {
+            document.getElementById(target).rows[square.row-1].cells[rcol].classList.add("occupied");
+        }
+    }));
+
+    for (i=row-1; i<=row+1; i++) {
+        for (j=lcol-1; j<=lcol+1; j++) {
+            if (i <= 10 && i >= 1 && j < 10 && j >= 0 && !document.getElementById(target).rows[i-1].cells[j].classList.contains("occupied")) {
+                document.getElementById(target).rows[i-1].cells[j].classList.add("sonar");
+            }
+        }
     }
 }
 
@@ -344,6 +366,14 @@ function initGame() {
             b.dataset.toggled = "false";
         } else {
             b.innerHTML = "Mode: Vertical"
+            b.dataset.toggled = "true";
+        };
+    });
+    document.getElementById("sonar_pulse").addEventListener("click", function(e) {
+        let b = e.srcElement;
+        if (b.dataset.toggled == "true") {
+            b.dataset.toggled = "false";
+        } else {
             b.dataset.toggled = "true";
         };
     });

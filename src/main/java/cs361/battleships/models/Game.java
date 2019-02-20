@@ -47,6 +47,13 @@ public class Game {
 
         return true;
     }
+    public boolean sonar(int actionRow, char actionColumn) {
+        if (opponentsBoard.getSonarCount() <= 0) {
+            return false;
+        }
+        opponentsBoard.setSonarCount(opponentsBoard.getSonarCount() - 1);
+        return true;
+    }
 
     /**
      * @return char random Column from 'A' to 'J'.
@@ -68,4 +75,5 @@ public class Game {
     private boolean randVertical() {
         return new Random().nextInt(2) > 0.5;
     }
+
 }

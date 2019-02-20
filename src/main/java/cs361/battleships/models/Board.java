@@ -12,6 +12,7 @@ public class Board {
 	@JsonProperty private List<Ship> ships;
 	@JsonProperty private List<Result> attacks;
 	@JsonProperty private List<Ship> sunkShips;
+	@JsonProperty private int sonarCount;
 
 	/*
 	DO NOT change the signature of this method. It is used by the grading scripts.
@@ -20,6 +21,7 @@ public class Board {
 		ships = new ArrayList<>();
 		attacks = new ArrayList<>();
 		sunkShips = new ArrayList<>();
+		sonarCount = -1;
 	}
 
 	/**
@@ -127,8 +129,11 @@ public class Board {
         // If all squares of ship hit it is considered sunk.
         if (outcome.getResult() == HIT && hitCount == outcome.getShip().getLength() - 1) {
             outcome.setResult(SUNK);
-            setSunkShipStatus(outcome.getShip());
-            sunkShips.add(outcome.getShip());
+			setSunkShipStatus(outcome.getShip());
+			sunkShips.add(outcome.getShip());
+            if (sonarCount == -1) {
+            	sonarCount = 2;
+			}
         }
 
         // If all ships were sunk trigger surrender.
@@ -179,5 +184,13 @@ public class Board {
 	 */
 	public void setAttacks(List<Result> attacks) {
         this.attacks = attacks;
+	}
+
+	public int getSonarCount() {
+		return sonarCount;
+	}
+
+	public void setSonarCount(int sonarCount) {
+		this.sonarCount = sonarCount;
 	}
 }
