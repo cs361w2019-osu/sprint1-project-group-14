@@ -1,5 +1,7 @@
 var isSetup = true;
 var isPlayerTurn = true;
+var isSonar = false;
+var reMain_hits_Sonar = 2;
 var gameOver = 0;
 var placedShips = 0;
 var game;
