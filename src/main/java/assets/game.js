@@ -2,6 +2,7 @@ var isSetup = true;
 var isPlayerTurn = true;
 var isSonar = false;
 var reMain_hits_Sonar = 2;
+var allowSonar=0;
 var gameOver = 0;
 var placedShips = 0;
 var game;
@@ -34,8 +35,12 @@ function markHits(board, elementId, surrenderNum) {
         let className;
         if (attack.result === "MISS")
             className = "miss";
-        else if (attack.result === "HIT")
-            className = "hit";
+        else if (attack.result === "HIT"){
+            reMain_hits_Sonar = reMain_hits_Sonar-1;
+           if(reMain_hits_Sonar === 0){
+                 allowSonar = true;
+            }
+            className = "hit";}
         else if (attack.result === "SUNK")
             className = "sunk";
         else if (attack.result === "SURRENDER") {
@@ -351,6 +356,11 @@ function initGame() {
     });
     document.getElementById("reset").addEventListener("click", function(e) {
         window.location.reload(false);
+    });
+    document.getElementById("sonar_pluse").addEventListener("click",function(e){
+        if(allowSonar==1){
+            isSonar = true;
+        }
     });
     disableGrid(document.getElementById("opponent"));
     sendXhr("GET", "/game", {}, function(data) {
