@@ -23,7 +23,7 @@ public class Game {
         do {
             // AI places random ships, so it might try and place overlapping ships
             // let it try until it gets it right
-            opponentPlacedSuccessfully = opponentsBoard.placeShip(new Ship(ship.getShipName()), randRow(), randCol(), randVertical());
+            opponentPlacedSuccessfully = opponentsBoard.placeShip(ShipFactory.createShip(ship.getShipName()), randRow(), randCol(), randVertical());
         } while (!opponentPlacedSuccessfully);
 
         return true;
