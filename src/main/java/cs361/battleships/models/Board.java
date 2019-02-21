@@ -34,12 +34,12 @@ public class Board {
 	 * @return boolean success of ship placement
 	 */
 	public boolean placeShip(Ship ship, int x, char y, boolean isVertical) {
-		int shipLength = ship.getLength();
-
-		// If ship len is 0, something went wrong with ship creation.
-		if (shipLength == 0) {
+		// If ship doesn't exist, something went wrong with ship creation.
+		if (ship == null) {
 			return false;
 		}
+
+		int shipLength = ship.getLength();
 
 		// User cannot place outside of grid
 		if (x < 1 || x > 10 || y < 'A' || y > 'J') {
@@ -60,7 +60,7 @@ public class Board {
 		}
 
 		// Make sure the ship doesn't overlap with other ships
-		ship.updateOccupiedSquares(x, y, isVertical);
+		ship.initialize(x, y, isVertical);
 		List<Square> thisOccupied = ship.getOccupiedSquares();
 
 		for (Ship s : ships) {
@@ -102,33 +102,27 @@ public class Board {
         for (Ship s : ships) {
             if (s.getOccupiedSquares().contains(outcome.getLocation())) {
                 outcome.setShip(s);
-                outcome.setResult(HIT);
+                // It is a hit when the ship part runs out of HP
+                if (s.registerAttack(outcome.getLocation(), Weapon.BOMB)) {
+					outcome.setResult(HIT);
+				} else {
+                	outcome.setResult(MISS);
+				}
                 break;
             }
         }
 
-        // hitCount represents the number of hits the given ship has already suffered.
-        int hitCount = 0;
-        for (Result r : attacks) {
-            // Check if location was previously attacked.
-            if (r.getLocation().equals(outcome.getLocation())) {
-                outcome.setResult(INVALID);
-                return outcome;
-            }
-            // Make sure we are not dealing with misses.
-            if (r.getResult() == HIT && outcome.getResult() == HIT) {
-                // Increment ship hit if the same ship was hit.
-                if (r.getShip().getShipName().equals(outcome.getShip().getShipName())) {
-                    hitCount++;
-                }
-            }
-        }
-
-        // If all squares of ship hit it is considered sunk.
-        if (outcome.getResult() == HIT && hitCount == outcome.getShip().getLength() - 1) {
+        // If the ship is sunk
+        if (outcome.getShip() != null && outcome.getShip().isSunk()) {
             outcome.setResult(SUNK);
             setSunkShipStatus(outcome.getShip());
-            sunkShips.add(outcome.getShip());
+            // If the ship has already been sunk
+			for (Ship s : sunkShips) {
+				if (s.getShipName().equals(outcome.getShip().getShipName())) {
+					return outcome;
+				}
+			}
+			sunkShips.add(outcome.getShip());
         }
 
         // If all ships were sunk trigger surrender.
@@ -143,41 +137,25 @@ public class Board {
 	}
 
 	private void setSunkShipStatus(Ship s) {
-		List<Square> occupied = s.getOccupiedSquares();
-
-		for (Result r : attacks) {
-			if (occupied.contains(r.getLocation())) {
-				r.setResult(SUNK);
+		boolean inAttacked = false;
+		for (Square sq : s.getOccupiedSquares()) {
+			for (Result r : attacks) {
+				if (r.getLocation().equals(sq)) {
+					r.setResult(SUNK);
+					inAttacked = true;
+					break;
+				}
 			}
+
+			if (!inAttacked) {
+				Result r = new Result();
+				r.setResult(SUNK);
+				r.setShip(s);
+				r.setLocation(sq);
+				attacks.add(r);
+			}
+
+			inAttacked = false;
 		}
-	}
-
-	/**
-	 * @return List<Ship> get array of ships placed.
-	 */
-	public List<Ship> getShips() {
-		return ships;
-	}
-
-	/**
-	 * @param ships set the ships placed list.
-	 */
-	public void setShips(List<Ship> ships) {
-		this.ships = ships;
-	}
-
-
-	/**
-	 * @return List<Result> get array of attacks made.
-	 */
-	public List<Result> getAttacks() {
-		return attacks;
-	}
-
-	/**
-	 * @param attacks set the attacks made list.
-	 */
-	public void setAttacks(List<Result> attacks) {
-        this.attacks = attacks;
 	}
 }
