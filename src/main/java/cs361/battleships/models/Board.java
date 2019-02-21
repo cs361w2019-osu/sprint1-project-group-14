@@ -62,7 +62,7 @@ public class Board {
 		}
 
 		// Make sure the ship doesn't overlap with other ships
-		ship.updateOccupiedSquares(x, y, isVertical);
+		ship.initialize(x, y, isVertical);
 		List<Square> thisOccupied = ship.getOccupiedSquares();
 
 		for (Ship s : ships) {
@@ -104,36 +104,31 @@ public class Board {
         for (Ship s : ships) {
             if (s.getOccupiedSquares().contains(outcome.getLocation())) {
                 outcome.setShip(s);
-                outcome.setResult(HIT);
+                if (s.registerAttack(outcome.getLocation(), Weapon.BOMB)) {
+					outcome.setResult(HIT);
+				} else {
+                	outcome.setResult(MISS);
+				}
                 break;
             }
         }
 
-        // hitCount represents the number of hits the given ship has already suffered.
-        int hitCount = 0;
-        for (Result r : attacks) {
-            // Check if location was previously attacked.
-            if (r.getLocation().equals(outcome.getLocation())) {
-                outcome.setResult(INVALID);
-                return outcome;
-            }
-            // Make sure we are not dealing with misses.
-            if (r.getResult() == HIT && outcome.getResult() == HIT) {
-                // Increment ship hit if the same ship was hit.
-                if (r.getShip().getShipName().equals(outcome.getShip().getShipName())) {
-                    hitCount++;
-                }
-            }
-        }
-
-        // If all squares of ship hit it is considered sunk.
-        if (outcome.getResult() == HIT && hitCount == outcome.getShip().getLength() - 1) {
+        // If the ship is sunk
+        if (outcome.getShip() != null && outcome.getShip().isSunk()) {
             outcome.setResult(SUNK);
-			setSunkShipStatus(outcome.getShip());
+
 			sunkShips.add(outcome.getShip());
             if (sonarCount == -1) {
             	sonarCount = 2;
 			}
+
+            setSunkShipStatus(outcome.getShip());
+			for (Ship s : sunkShips) {
+				if (s.getShipName().equals(outcome.getShip().getShipName())) {
+					return outcome;
+				}
+			}
+			sunkShips.add(outcome.getShip());
         }
 
         // If all ships were sunk trigger surrender.
@@ -147,13 +142,40 @@ public class Board {
         return outcome;
 	}
 
-	private void setSunkShipStatus(Ship s) {
-		List<Square> occupied = s.getOccupiedSquares();
+	public Result sonar(int x, char y) {
+		Result outcome = new Result();
+		if (sonarCount <= 0) {
+			outcome.setResult(INVALID);
+			return outcome;
+		}
+		outcome.setLocation(new Square(x, y));
+		outcome.setResult(SONAR);
 
-		for (Result r : attacks) {
-			if (occupied.contains(r.getLocation())) {
-				r.setResult(SUNK);
+		sonarCount--;
+		attacks.add(outcome);
+		return outcome;
+	}
+
+	private void setSunkShipStatus(Ship s) {
+		boolean inAttacked = false;
+		for (Square sq : s.getOccupiedSquares()) {
+			for (Result r : attacks) {
+				if (r.getLocation().equals(sq)) {
+					r.setResult(SUNK);
+					inAttacked = true;
+					break;
+				}
 			}
+
+			if (!inAttacked) {
+				Result r = new Result();
+				r.setResult(SUNK);
+				r.setShip(s);
+				r.setLocation(sq);
+				attacks.add(r);
+			}
+
+			inAttacked = false;
 		}
 	}
 

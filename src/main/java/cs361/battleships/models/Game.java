@@ -23,7 +23,7 @@ public class Game {
         do {
             // AI places random ships, so it might try and place overlapping ships
             // let it try until it gets it right
-            opponentPlacedSuccessfully = opponentsBoard.placeShip(new Ship(ship.getShipName()), randRow(), randCol(), randVertical());
+            opponentPlacedSuccessfully = opponentsBoard.placeShip(ShipFactory.createShip(ship.getShipName()), randRow(), randCol(), randVertical());
         } while (!opponentPlacedSuccessfully);
 
         return true;
@@ -48,10 +48,10 @@ public class Game {
         return true;
     }
     public boolean sonar(int actionRow, char actionColumn) {
-        if (opponentsBoard.getSonarCount() <= 0) {
+        Result playerSonar = opponentsBoard.sonar(actionRow, actionColumn);
+        if (playerSonar.getResult() == INVALID) {
             return false;
         }
-        opponentsBoard.setSonarCount(opponentsBoard.getSonarCount() - 1);
         return true;
     }
 
