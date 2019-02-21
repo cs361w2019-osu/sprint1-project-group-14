@@ -44,7 +44,9 @@ public abstract class Ship {
 
 	protected boolean decrementHealth(int[] health, List<Square> occupiedSquares, Square s) {
 		int square = occupiedSquares.indexOf(s);
-		if (square >= 0 && health[square] > 0) {
+		if (square < 0) return false;
+
+		if (health[square] > 0) {
 			health[square]--;
 		}
 		return health[square] <= 0;

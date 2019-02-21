@@ -34,12 +34,12 @@ public class Board {
 	 * @return boolean success of ship placement
 	 */
 	public boolean placeShip(Ship ship, int x, char y, boolean isVertical) {
-		int shipLength = ship.getLength();
-
-		// If ship len is 0, something went wrong with ship creation.
-		if (shipLength == 0) {
+		// If ship doesn't exist, something went wrong with ship creation.
+		if (ship == null) {
 			return false;
 		}
+
+		int shipLength = ship.getLength();
 
 		// User cannot place outside of grid
 		if (x < 1 || x > 10 || y < 'A' || y > 'J') {
@@ -102,6 +102,7 @@ public class Board {
         for (Ship s : ships) {
             if (s.getOccupiedSquares().contains(outcome.getLocation())) {
                 outcome.setShip(s);
+                // It is a hit when the ship part runs out of HP
                 if (s.registerAttack(outcome.getLocation(), Weapon.BOMB)) {
 					outcome.setResult(HIT);
 				} else {
@@ -115,6 +116,7 @@ public class Board {
         if (outcome.getShip() != null && outcome.getShip().isSunk()) {
             outcome.setResult(SUNK);
             setSunkShipStatus(outcome.getShip());
+            // If the ship has already been sunk
 			for (Ship s : sunkShips) {
 				if (s.getShipName().equals(outcome.getShip().getShipName())) {
 					return outcome;
@@ -155,34 +157,5 @@ public class Board {
 
 			inAttacked = false;
 		}
-	}
-
-	/**
-	 * @return List<Ship> get array of ships placed.
-	 */
-	public List<Ship> getShips() {
-		return ships;
-	}
-
-	/**
-	 * @param ships set the ships placed list.
-	 */
-	public void setShips(List<Ship> ships) {
-		this.ships = ships;
-	}
-
-
-	/**
-	 * @return List<Result> get array of attacks made.
-	 */
-	public List<Result> getAttacks() {
-		return attacks;
-	}
-
-	/**
-	 * @param attacks set the attacks made list.
-	 */
-	public void setAttacks(List<Result> attacks) {
-        this.attacks = attacks;
 	}
 }
