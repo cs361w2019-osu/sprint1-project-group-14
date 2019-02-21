@@ -8,6 +8,13 @@ import static org.junit.Assert.*;
 public class BoardTest {
 
     @Test
+    public void testNullShip() {
+        Board board = new Board();
+        Ship s = ShipFactory.createShip("NOT REAL");
+        assertFalse(board.placeShip(s, 11, 'A', false));
+    }
+
+    @Test
     public void testStartOutOfBounds() {
         Board board = new Board();
         Ship s = ShipFactory.createShip("DESTROYER");
@@ -52,7 +59,8 @@ public class BoardTest {
         assertTrue(board.placeShip(s, 3, 'A', true));
         Ship s2 = ShipFactory.createShip("DESTROYER");
         assertFalse(board.placeShip(s2, 4, 'A', false));
-        assertFalse(board.placeShip(s, 5, 'A', false));
+
+        assertTrue(board.placeShip(s2, 5, 'A', false));
     }
 
     @Test
@@ -68,10 +76,10 @@ public class BoardTest {
     @Test
     public void testAttackCollision() {
         Board board = new Board();
-        Ship s = ShipFactory.createShip("MINESWEEPER");
+
+        Ship s = ShipFactory.createShip("DESTROYER");
         board.placeShip(s, 3, 'C', true);
-        assertSame(board.attack(4, 'C').getResult(), AtackStatus.HIT);
-        assertNotSame(board.attack(4,'C').getResult(), AtackStatus.INVALID);
+        assertSame(board.attack(5, 'C').getResult(), AtackStatus.HIT);
     }
 
     @Test
@@ -80,20 +88,50 @@ public class BoardTest {
         Ship s = ShipFactory.createShip("MINESWEEPER");
         board.placeShip(s,4,'C',true);
 
-        assertSame(board.attack(1,'A').getResult(), AtackStatus.MISS );
-        assertSame(board.attack(2,'D').getResult(), AtackStatus.MISS );
+        assertSame(board.attack(1,'A').getResult(), AtackStatus.MISS);
+        assertSame(board.attack(2,'D').getResult(), AtackStatus.MISS);
     }
 
     @Test
     public void testShipSunk() {
         Board board = new Board();
-        Ship d = ShipFactory.createShip("DESTROYER");
         Ship s = ShipFactory.createShip("MINESWEEPER");
+        Ship d = ShipFactory.createShip("DESTROYER");
         board.placeShip(s, 3, 'A', true);
         board.placeShip(d, 4, 'D', false);
 
-        assertSame(board.attack(3, 'A').getResult(), AtackStatus.MISS);
+        assertSame(board.attack(4, 'A').getResult(), AtackStatus.HIT);
         assertSame(board.attack(3, 'A').getResult(), AtackStatus.SUNK);
+    }
+
+    @Test
+    public void testSetSunkShipStatus() {
+        Board board = new Board();
+        Ship s = ShipFactory.createShip("MINESWEEPER");
+        Ship d = ShipFactory.createShip("DESTROYER");
+        board.placeShip(s, 3, 'A', true);
+        board.placeShip(d, 4, 'D', false);
+
+        board.placeShip(s, 3, 'A', true);
+
+        assertSame(board.attack(3, 'A').getResult(), AtackStatus.SUNK);
+        assertSame(board.attack(4, 'A').getResult(), AtackStatus.SUNK);
+    }
+
+    @Test
+    public void testSinkSameShipTwice() {
+        Board board = new Board();
+        Ship s = ShipFactory.createShip("MINESWEEPER");
+        Ship d = ShipFactory.createShip("DESTROYER");
+        board.placeShip(s, 3, 'A', true);
+        board.placeShip(d, 4, 'D', false);
+
+        // Surrender doesn't activate after sinking same ship twice
+        assertSame(board.attack(3, 'A').getResult(), AtackStatus.SUNK);
+        assertSame(board.attack(4, 'A').getResult(), AtackStatus.SUNK);
+
+        assertSame(board.attack(4, 'E').getResult(), AtackStatus.MISS);
+        assertSame(board.attack(4, 'E').getResult(), AtackStatus.SURRENDER);
     }
 
     @Test
@@ -105,11 +143,10 @@ public class BoardTest {
         board.placeShip(s, 2, 'C', true);
 
         assertSame(board.attack(4, 'D').getResult(), AtackStatus.HIT);
+        assertSame(board.attack(4, 'F').getResult(), AtackStatus.HIT);
         assertSame(board.attack(4, 'E').getResult(), AtackStatus.MISS);
         assertSame(board.attack(4, 'E').getResult(), AtackStatus.SUNK);
-        assertTrue(d.isSunk());
 
-        assertSame(board.attack(2, 'C').getResult(), AtackStatus.MISS);
         assertSame(board.attack(2, 'C').getResult(), AtackStatus.SURRENDER);
     }
 
@@ -123,8 +160,8 @@ public class BoardTest {
         Board board = new Board();
         Ship s = ShipFactory.createShip("MINESWEEPER");
         board.placeShip(s, 4, 'D', false);
-        board.attack(4,'D');
-        board.attack(4,'D');
-        assertSame(board.sonar(4,'D').getResult(), AtackStatus.SONAR);
+        board.attack(4, 'D');
+        board.attack(4, 'D');
+        assertSame(board.sonar(4, 'D').getResult(), AtackStatus.SONAR);
     }
 }

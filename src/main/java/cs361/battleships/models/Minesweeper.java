@@ -16,7 +16,7 @@ public class Minesweeper extends Ship {
     private List<Square> occupiedSquares;
 
     @JsonProperty
-    private int[] health = {2, 1};
+    private int[] health = {1, 1};
 
     public Minesweeper() {
     }

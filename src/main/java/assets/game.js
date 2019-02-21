@@ -84,7 +84,7 @@ function markActionBar(person, result) {
     } else if (result == "sunk") {
         resultStatus = personUpper + "'s ship sunk.";
     } else if (result == "sonar") {
-        resultStatus = personUpper + " activated sonar scan."
+        resultStatus = personUpper + " was hit by sonar."
     } else {
         resultStatus = "-";
     };
