@@ -42,6 +42,14 @@ public abstract class Ship {
 		return occupiedSquares;
 	}
 
+	/**
+	 * Decrements the health of a ship part given a health array.
+	 *
+	 * @param health int[] array of ship part health
+	 * @param occupiedSquares List<Square> squares the ship occupies
+	 * @param s Square ship part health to decrement
+	 * @return
+	 */
 	protected boolean decrementHealth(int[] health, List<Square> occupiedSquares, Square s) {
 		int square = occupiedSquares.indexOf(s);
 		if (square < 0) return false;
@@ -53,7 +61,7 @@ public abstract class Ship {
 	}
 
 	/**
-	 * Perform initialization code
+	 * Perform initialization code (e.g. ship placement).
 	 * @param r
 	 * @param c
 	 * @param isVert
@@ -63,7 +71,7 @@ public abstract class Ship {
 	/**
 	 * Register an attack to the ship.
 	 * @param s Square to damage.
-	 * @return boolean whether the attack hit
+	 * @return boolean whether the attack killed the body part
 	 */
 	public abstract boolean registerAttack(Square s, Weapon w);
 
