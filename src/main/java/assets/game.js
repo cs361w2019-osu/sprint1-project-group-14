@@ -36,7 +36,7 @@ function markHits(board, elementId, surrenderNum) {
             className = "hit";
         else if (attack.result === "SONAR") {
             className = "sonar";
-            sonarPulse(board, attack.location.column, attack.location.row, "opponent");
+            sonarPulse(board, attack.location.column, attack.location.row, elementId);
         }
         else if (attack.result === "SUNK")
             className = "sunk";

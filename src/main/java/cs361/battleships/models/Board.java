@@ -116,12 +116,6 @@ public class Board {
         // If the ship is sunk
         if (outcome.getShip() != null && outcome.getShip().isSunk()) {
             outcome.setResult(SUNK);
-
-			sunkShips.add(outcome.getShip());
-            if (sonarCount == -1) {
-            	sonarCount = 2;
-			}
-
             setSunkShipStatus(outcome.getShip());
 			for (Ship s : sunkShips) {
 				if (s.getShipName().equals(outcome.getShip().getShipName())) {
@@ -129,6 +123,11 @@ public class Board {
 				}
 			}
 			sunkShips.add(outcome.getShip());
+
+			// If first ship is sunk, give sonars
+			if (sonarCount == -1) {
+				sonarCount = 2;
+			}
         }
 
         // If all ships were sunk trigger surrender.
