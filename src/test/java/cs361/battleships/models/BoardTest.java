@@ -7,15 +7,6 @@ import static org.junit.Assert.*;
 
 public class BoardTest {
 
-    /**
-    @Test
-    public void testZeroLengthShip() {
-        Board board = new Board();
-        Ship s = new Ship();
-        assertFalse(board.placeShip(s, 5, 'A', false));
-    }
-     */
-
     @Test
     public void testStartOutOfBounds() {
         Board board = new Board();
