@@ -2,18 +2,19 @@
 -------------------------------------------------- */
 
 .battleGrid {
-    border: 1px solid black;
-    border-spacing: 0px;
+    /* border: 1px solid black; */
+    border-spacing: 5px;
 }
 
 .battleGrid tr {
-    border: 1px solid black;
+    border: 0.2px solid black;
     height: 30px;
 }
 
 .battleGrid td {
-    border: 1px solid black;
+    border: 0.2px solid black;
     width: 30px;
+    box-shadow: 1px 1px 5px;
 }
 #is_vertical{
     margin-bottom:10px;
@@ -35,36 +36,37 @@
 }
 
 .ship {
-    border: 1px solid black;
-    border-spacing: 0px;
+    border-spacing: 5px;
 
     margin: 10px;
 }
 
 .ship tr {
-    border: 1px solid black;
+    border: 0.2px solid black;
     height: 30px;
+    border-spacing: 5px;
 }
 
 .ship td {
-    border: 1px solid black;
+    border: 0.2px solid black;
+    box-shadow: 1px 1px 5px;
     width: 30px;
 }
 
 
-.ship[data-selected="true"] {
+.ship[data-selected="true"] td {
     background-color: blue;
 }
 
-.ship:hover {
+.ship:hover td{
     background-color: gray;
 }
 
-.ship[data-placed="true"] {
+.ship[data-placed="true"] td {
     background-color: black;
 }
 
-.ship[data-sunk="true"] {
+.ship[data-sunk="true"] td {
     background-color: red;
 }
 
@@ -88,10 +90,6 @@
 
 .hit {
     background-color: orange;
-}
-
-.sonar {
-    background-color: green;
 }
 
 .sunk {
