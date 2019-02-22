@@ -34,16 +34,44 @@ function markHits(board, elementId, surrenderNum) {
             className = "miss";
         else if (attack.result === "HIT")
             className = "hit";
+        else if (attack.result === "SONAR") {
+            className = "sonar";
+            sonarPulse(board, attack.location.column, attack.location.row, elementId);
+        }
         else if (attack.result === "SUNK")
             className = "sunk";
         else if (attack.result === "SURRENDER") {
             className = "sunk";
             surrender = surrenderNum;
         }
-        document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add(className);
+
+        if (className !== "sonar") {
+            document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add(className);
+        }
         markActionBar(elementId, className);
     });
     return surrender;
+}
+
+function sonarPulse(board, col, row, target) {
+    var lcol = col.charCodeAt(0) - 'A'.charCodeAt(0)
+
+    board.ships.forEach((ship) => ship.occupiedSquares.forEach((square) => {
+        var rcol = square.column.charCodeAt(0) - 'A'.charCodeAt(0)
+        if ((row <= square.row + 2 && row >= square.row - 2) &&
+            ((lcol >= rcol - 2) && (lcol <= rcol + 2)) && (Math.abs(lcol - rcol) + Math.abs(row - square.row) <= 2)) {
+            document.getElementById(target).rows[square.row-1].cells[rcol].classList.add("occupied");
+        }
+    }));
+
+    for (i=row-2; i<=row+2; i++) {
+        for (j=lcol-2; j<=lcol+2; j++) {
+            if (i <= 10 && i >= 1 && j < 10 && j >= 0 && Math.abs(row - i) + Math.abs(lcol-j) <= 2 &&
+            !document.getElementById(target).rows[i-1].cells[j].classList.contains("occupied")) {
+                document.getElementById(target).rows[i-1].cells[j].classList.add("sonar");
+            }
+        }
+    }
 }
 
 function markActionBar(person, result) {
@@ -55,6 +83,8 @@ function markActionBar(person, result) {
         resultStatus = personUpper + " was hit.";
     } else if (result == "sunk") {
         resultStatus = personUpper + "'s ship sunk.";
+    } else if (result == "sonar") {
+        resultStatus = personUpper + " was hit by sonar."
     } else {
         resultStatus = "-";
     };
@@ -194,9 +224,16 @@ function cellClick() {
                 }
                 isPlayerTurn = true;
             }, 1000);
-
-
         });
+    } else if (isPlayerTurn && document.getElementById("sonar_pulse").dataset.toggled === "true") {
+        sendXhr("POST", "/sonar", {game: game, x: row, y: col}, function(data) {
+            game = data
+            endPlayerTurn()
+            window.setTimeout(function(){
+                endOpponentTurn()
+             }, 1000);
+        });
+        document.getElementById("sonar_pulse").dataset.toggled = "false"
     } else if (isPlayerTurn){
         sendXhr("POST", "/attack", {game: game, x: row, y: col}, function(data) {
             game = data;
@@ -344,6 +381,14 @@ function initGame() {
             b.dataset.toggled = "false";
         } else {
             b.innerHTML = "Mode: Vertical"
+            b.dataset.toggled = "true";
+        };
+    });
+    document.getElementById("sonar_pulse").addEventListener("click", function(e) {
+        let b = e.srcElement;
+        if (b.dataset.toggled == "true") {
+            b.dataset.toggled = "false";
+        } else {
             b.dataset.toggled = "true";
         };
     });

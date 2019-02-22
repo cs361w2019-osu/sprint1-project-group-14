@@ -13,6 +13,11 @@ public enum AtackStatus {
 	HIT,
 
 	/**
+	 * Area was hit by sonar pulse
+	 */
+	SONAR,
+
+	/**
 	 * THe result if an attack sinks the enemy ship
 	 */
 	SUNK,

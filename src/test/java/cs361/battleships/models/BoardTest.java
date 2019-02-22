@@ -147,4 +147,19 @@ public class BoardTest {
 
         assertSame(board.attack(2, 'C').getResult(), AtackStatus.SURRENDER);
     }
+
+    @Test
+    public void testNoSonarCharges() {
+        Board board = new Board();
+        assertSame(board.sonar(4,'D').getResult(), AtackStatus.INVALID);
+    }
+    @Test
+    public void testSonarCharges() {
+        Board board = new Board();
+        Ship s = ShipFactory.createShip("MINESWEEPER");
+        board.placeShip(s, 4, 'D', false);
+        board.attack(4, 'D');
+        board.attack(4, 'D');
+        assertSame(board.sonar(4, 'D').getResult(), AtackStatus.SONAR);
+    }
 }

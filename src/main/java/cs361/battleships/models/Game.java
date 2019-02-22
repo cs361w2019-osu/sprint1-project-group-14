@@ -39,12 +39,23 @@ public class Game {
         }
 
         Result opponentAttackResult;
+
         do {
             // AI does random attacks, so it might attack the same spot twice
             // let it try until it gets it right
-            opponentAttackResult = playersBoard.attack(randRow(), randCol());
+            if (randRow() == 10)
+                opponentAttackResult = playersBoard.sonar(randRow(), randCol());
+            else
+                opponentAttackResult = playersBoard.attack(randRow(), randCol());
         } while(opponentAttackResult.getResult() == INVALID);
 
+        return true;
+    }
+    public boolean sonar(int actionRow, char actionColumn) {
+        Result playerSonar = opponentsBoard.sonar(actionRow, actionColumn);
+        if (playerSonar.getResult() == INVALID) {
+            return false;
+        }
         return true;
     }
 
