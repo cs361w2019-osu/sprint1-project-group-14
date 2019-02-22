@@ -7,12 +7,12 @@
 }
 
 .battleGrid tr {
-    border: 1px solid black;
+    border: 0.2px solid black;
     height: 30px;
 }
 
 .battleGrid td {
-    border: 1px solid black;
+    border: 0.2px solid black;
     width: 30px;
     box-shadow: 1px 1px 5px;
 }
@@ -42,13 +42,13 @@
 }
 
 .ship tr {
-    border: 1px solid black;
+    border: 0.2px solid black;
     height: 30px;
     border-spacing: 5px;
 }
 
 .ship td {
-    border: 1px solid black;
+    border: 0.2px solid black;
     box-shadow: 1px 1px 5px;
     width: 30px;
 }

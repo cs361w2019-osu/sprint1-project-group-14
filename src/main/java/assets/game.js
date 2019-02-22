@@ -2,22 +2,30 @@ var isSetup = true;
 var isPlayerTurn = true;
 var gameOver = 0;
 var placedShips = 0;
+var hoverCellIndex = 0;
+var outCellIndex = 0;
+var hoverRowIndex = 0;
+var outRowIndex = 0;
 var game;
 var shipType;
 var vertical;
 var statusBar = document.getElementsByClassName("status-bar")[0];
 
-var playerShipsMap = {"MINESWEEPER" : "place_minesweeper",
-                      "DESTROYER"   : "place_destroyer",
-                      "BATTLESHIP"  : "place_battleship"};
-var opponentShipsMap = {"MINESWEEPER" : "opponent_minesweeper",
-                        "DESTROYER"   : "opponent_destroyer",
-                        "BATTLESHIP"  : "opponent_battleship"};
+var playerShipsMap = {
+    "MINESWEEPER": "place_minesweeper",
+    "DESTROYER": "place_destroyer",
+    "BATTLESHIP": "place_battleship"
+};
+var opponentShipsMap = {
+    "MINESWEEPER": "opponent_minesweeper",
+    "DESTROYER": "opponent_destroyer",
+    "BATTLESHIP": "opponent_battleship"
+};
 
 function makeGrid(table) {
-    for (i=0; i<10; i++) {
+    for (i = 0; i < 10; i++) {
         let row = document.createElement('tr');
-        for (j=0; j<10; j++) {
+        for (j = 0; j < 10; j++) {
             let column = document.createElement('td');
             column.addEventListener("click", cellClick);
             row.appendChild(column);
@@ -46,7 +54,7 @@ function markHits(board, elementId, surrenderNum) {
         }
 
         if (className !== "sonar") {
-            document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add(className);
+            document.getElementById(elementId).rows[attack.location.row - 1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add(className);
         }
         markActionBar(elementId, className);
     });
@@ -60,22 +68,64 @@ function sonarPulse(board, col, row, target) {
         var rcol = square.column.charCodeAt(0) - 'A'.charCodeAt(0)
         if ((row <= square.row + 2 && row >= square.row - 2) &&
             ((lcol >= rcol - 2) && (lcol <= rcol + 2)) && (Math.abs(lcol - rcol) + Math.abs(row - square.row) <= 2)) {
-            document.getElementById(target).rows[square.row-1].cells[rcol].classList.add("occupied");
+            document.getElementById(target).rows[square.row - 1].cells[rcol].classList.add("occupied");
         }
     }));
 
-    for (i=row-2; i<=row+2; i++) {
-        for (j=lcol-2; j<=lcol+2; j++) {
-            if (i <= 10 && i >= 1 && j < 10 && j >= 0 && Math.abs(row - i) + Math.abs(lcol-j) <= 2 &&
-            !document.getElementById(target).rows[i-1].cells[j].classList.contains("occupied")) {
-                document.getElementById(target).rows[i-1].cells[j].classList.add("sonar");
+    for (i = row - 2; i <= row + 2; i++) {
+        for (j = lcol - 2; j <= lcol + 2; j++) {
+            if (i <= 10 && i >= 1 && j < 10 && j >= 0 && Math.abs(row - i) + Math.abs(lcol - j) <= 2 &&
+                !document.getElementById(target).rows[i - 1].cells[j].classList.contains("occupied")) {
+                document.getElementById(target).rows[i - 1].cells[j].classList.add("sonar");
+            }
+        }
+    }
+
+    for (let i = 0; i < 10; i++) {
+        document.getElementById('opponent').rows[i].removeEventListener("mouseover", getRowIndex);
+        document.getElementById('opponent').rows[i].removeEventListener("mouseout", cleanRow);
+
+        for (let j = 0; j < 10; j++) {
+            document.getElementById('opponent').rows[i].cells[j].removeEventListener("mouseover", getCellIndex);
+            document.getElementById('opponent').rows[i].cells[j].removeEventListener("mouseout", cleanCell);
+        }
+    }
+
+}
+
+var getCellIndex = function (e) {
+    hoverCellIndex = e.srcElement.cellIndex;
+
+    for (i = hoverRowIndex - 2; i <= hoverRowIndex + 2; i++) {
+        for (j = hoverCellIndex - 2; j <= hoverCellIndex + 2; j++) {
+            if (i <= 10 && i >= 1 && j < 10 && j >= 0 && Math.abs(hoverRowIndex - i) + Math.abs(hoverCellIndex - j) <= 2) {
+                document.getElementById('opponent').rows[i - 1].cells[j].style.background = "gray";
+            }
+        }
+    }
+}
+var getRowIndex = function (e) {
+    hoverRowIndex = e.path[1].rowIndex;
+}
+
+var cleanCell = function (e) {
+    outCellIndex = e.srcElement.cellIndex;
+
+    for (i = outRowIndex - 2; i <= outRowIndex + 2; i++) {
+        for (j = outCellIndex - 2; j <= outCellIndex + 2; j++) {
+            if (i <= 10 && i >= 1 && j < 10 && j >= 0 && Math.abs(outRowIndex - i) + Math.abs(outCellIndex - j) <= 2) {
+                document.getElementById('opponent').rows[i - 1].cells[j].style.background = "";
             }
         }
     }
 }
 
+var cleanRow = function (e) {
+    outRowIndex = e.path[1].rowIndex;
+}
+
 function markActionBar(person, result) {
-    personUpper = person.replace(/\b\w/g, function(l){ return l.toUpperCase() })
+    personUpper = person.replace(/\b\w/g, function (l) { return l.toUpperCase() })
 
     if (result === "miss") {
         resultStatus = personUpper + " missed.";
@@ -89,22 +139,22 @@ function markActionBar(person, result) {
         resultStatus = "-";
     };
 
-    document.getElementsByClassName(person+"-result")[0].dataset.result = result;
-    document.getElementsByClassName(person+"-result")[0].innerHTML = resultStatus;
+    document.getElementsByClassName(person + "-result")[0].dataset.result = result;
+    document.getElementsByClassName(person + "-result")[0].innerHTML = resultStatus;
 }
 
 function disableGrid(grid) {
-    for (i=0; i<10; i++) {
-        for (j=0; j<10; j++) {
+    for (i = 0; i < 10; i++) {
+        for (j = 0; j < 10; j++) {
             //remove the condition to make sure all the cell is disabled.
-                grid.rows[i].cells[j].classList.add("disabled");
+            grid.rows[i].cells[j].classList.add("disabled");
         }
     }
 }
 
 function enableGrid(grid) {
-    for (i=0; i<10; i++) {
-        for (j=0; j<10; j++) {
+    for (i = 0; i < 10; i++) {
+        for (j = 0; j < 10; j++) {
             if (grid.rows[i].cells[j].classList.contains("disabled")) {
                 grid.rows[i].cells[j].classList.remove("disabled");
             }
@@ -121,14 +171,14 @@ function redrawGrid(person) {
     }
     if (person === "player") {
         game.playersBoard.ships.forEach((ship) => ship.occupiedSquares.forEach((square) => {
-            document.getElementById("player").rows[square.row-1].cells[square.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add("occupied");
+            document.getElementById("player").rows[square.row - 1].cells[square.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add("occupied");
         }));
         gameOver = markHits(game.playersBoard, person, 1);
     } else {
         gameOver = markHits(game.opponentsBoard, person, 2);
     }
 
-    game[person+'sBoard']['sunkShips'].forEach(function(s) {
+    game[person + 'sBoard']['sunkShips'].forEach(function (s) {
         var e;
         if (person == "player") {
             e = playerShipsMap[s.shipName];
@@ -142,8 +192,8 @@ function redrawGrid(person) {
 var oldListener;
 function registerCellListener(f) {
     let el = document.getElementById("player");
-    for (i=0; i<10; i++) {
-        for (j=0; j<10; j++) {
+    for (i = 0; i < 10; i++) {
+        for (j = 0; j < 10; j++) {
             let cell = el.rows[i].cells[j];
             cell.removeEventListener("mouseover", oldListener);
             cell.removeEventListener("mouseout", oldListener);
@@ -190,14 +240,14 @@ function cellClick() {
     let row = this.parentNode.rowIndex + 1;
     let col = String.fromCharCode(this.cellIndex + 65);
     if (isSetup) {
-        sendXhr("POST", "/place", {game: game, shipType: shipType, x: row, y: col, isVertical: vertical}, function(data) {
+        sendXhr("POST", "/place", { game: game, shipType: shipType, x: row, y: col, isVertical: vertical }, function (data) {
             game = data;
             placedShips++;
             redrawGrid("player");
             redrawGrid("opponent");
             if (placedShips == 3) {
                 isSetup = false;
-                registerCellListener((e) => {});
+                registerCellListener((e) => { });
             }
             document.getElementById(playerShipsMap[shipType]).dataset.placed = "true";
 
@@ -211,7 +261,7 @@ function cellClick() {
             }
 
             statusBar.innerText = "Opponent placing ship.";
-            window.setTimeout(function() {
+            window.setTimeout(function () {
                 document.getElementById(opponentShipsMap[shipType]).dataset.placed = "true";
                 document.getElementById(opponentShipsMap[shipType]).classList.remove("disabled");
                 if (isSetup) {
@@ -226,26 +276,26 @@ function cellClick() {
             }, 1000);
         });
     } else if (isPlayerTurn && document.getElementById("sonar_pulse").dataset.toggled === "true") {
-        sendXhr("POST", "/sonar", {game: game, x: row, y: col}, function(data) {
+        sendXhr("POST", "/sonar", { game: game, x: row, y: col }, function (data) {
             game = data
             endPlayerTurn()
-            window.setTimeout(function(){
+            window.setTimeout(function () {
                 endOpponentTurn()
-             }, 1000);
+            }, 1000);
         });
         document.getElementById("sonar_pulse").dataset.toggled = "false"
-    } else if (isPlayerTurn){
-        sendXhr("POST", "/attack", {game: game, x: row, y: col}, function(data) {
+    } else if (isPlayerTurn) {
+        sendXhr("POST", "/attack", { game: game, x: row, y: col }, function (data) {
             game = data;
             endPlayerTurn()
             if (gameOver === 0) {
-                window.setTimeout(function(){
+                window.setTimeout(function () {
                     endOpponentTurn()
                     if (gameOver === 1) {
                         playerLost()
                     }
                 }, 1000);
-            } else if(gameOver === 2){
+            } else if (gameOver === 2) {
                 playerWins()
             }
         })
@@ -256,7 +306,7 @@ function blinkInvalid() {
     statusBar.dataset.invalid = "true";
     let oldText = statusBar.innerText;
     statusBar.innerText = "Invalid Operation";
-    window.setTimeout(function() {
+    window.setTimeout(function () {
         statusBar.innerText = oldText;
         statusBar.dataset.invalid = "false";
     }, 500);
@@ -265,14 +315,14 @@ function blinkInvalid() {
 function redBlink(grid) {
     grid.style.border = "2px solid red";
     markActionBar(grid.getAttribute("id"), "-");
-    window.setTimeout(function(){
+    window.setTimeout(function () {
         grid.style.border = "";
     }, 200);
 }
 
 function sendXhr(method, url, data, handler) {
     var req = new XMLHttpRequest();
-    req.addEventListener("load", function(event) {
+    req.addEventListener("load", function (event) {
         if (req.status != 200) {
             redBlink(document.getElementById('player'));
             redBlink(document.getElementById('opponent'));
@@ -287,22 +337,22 @@ function sendXhr(method, url, data, handler) {
 }
 
 function place(size) {
-    return function() {
+    return function () {
         let row = this.parentNode.rowIndex;
         let col = this.cellIndex;
         vertical = (document.getElementById("is_vertical").dataset.toggled) == "true";
         let table = document.getElementById("player");
-        for (let i=0; i<size; i++) {
+        for (let i = 0; i < size; i++) {
             let cell;
-            if(vertical) {
-                let tableRow = table.rows[row+i];
+            if (vertical) {
+                let tableRow = table.rows[row + i];
                 if (tableRow === undefined) {
                     // ship is over the edge; let the back end deal with it
                     break;
                 }
                 cell = tableRow.cells[col];
             } else {
-                cell = table.rows[row].cells[col+i];
+                cell = table.rows[row].cells[col + i];
             }
             if (cell === undefined) {
                 // ship is over the edge; let the back end deal with it
@@ -318,15 +368,15 @@ function initGame() {
     makeGrid(document.getElementById("opponent"), false);
     makeGrid(document.getElementById("player"), true);
     statusBar.innerText = "Place your ship.";
-    document.getElementById("place_minesweeper").addEventListener("click", function(e) {
+    document.getElementById("place_minesweeper").addEventListener("click", function (e) {
         if (!isPlayerTurn) {
             return
         }
         shipType = "MINESWEEPER";
         let s = document.getElementById("place_minesweeper");
-        p_ships.forEach(function(ship) {
+        p_ships.forEach(function (ship) {
             let s = document.getElementById(ship);
-            if(s.dataset.placed == "false") {
+            if (s.dataset.placed == "false") {
                 s.dataset.selected = "false";
             };
         });
@@ -338,17 +388,17 @@ function initGame() {
             registerCellListener(place(2));
         }
     });
-    document.getElementById("place_destroyer").addEventListener("click", function(e) {
+    document.getElementById("place_destroyer").addEventListener("click", function (e) {
         if (!isPlayerTurn) {
             return
         }
         shipType = "DESTROYER";
         let s = document.getElementById("place_destroyer");
-        p_ships.forEach(function(ship) {
-             let s = document.getElementById(ship);
-             if(s.dataset.placed == "false") {
-                 s.dataset.selected = "false";
-             };
+        p_ships.forEach(function (ship) {
+            let s = document.getElementById(ship);
+            if (s.dataset.placed == "false") {
+                s.dataset.selected = "false";
+            };
         });
         s.dataset.selected = "true";
 
@@ -356,17 +406,17 @@ function initGame() {
             registerCellListener(place(3));
         }
     });
-    document.getElementById("place_battleship").addEventListener("click", function(e) {
+    document.getElementById("place_battleship").addEventListener("click", function (e) {
         if (!isPlayerTurn) {
             return
         }
         shipType = "BATTLESHIP";
         let s = document.getElementById("place_battleship");
-        p_ships.forEach(function(ship) {
-             let s = document.getElementById(ship);
-             if(s.dataset.placed == "false") {
-                 s.dataset.selected = "false";
-             };
+        p_ships.forEach(function (ship) {
+            let s = document.getElementById(ship);
+            if (s.dataset.placed == "false") {
+                s.dataset.selected = "false";
+            };
         });
         s.dataset.selected = "true";
 
@@ -374,7 +424,7 @@ function initGame() {
             registerCellListener(place(4));
         }
     });
-    document.getElementById("is_vertical").addEventListener("click", function(e) {
+    document.getElementById("is_vertical").addEventListener("click", function (e) {
         let b = e.srcElement;
         if (b.dataset.toggled == "true") {
             b.innerHTML = "Mode: Horizontal"
@@ -384,19 +434,27 @@ function initGame() {
             b.dataset.toggled = "true";
         };
     });
-    document.getElementById("sonar_pulse").addEventListener("click", function(e) {
+    document.getElementById("sonar_pulse").addEventListener("click", function (e) {
         let b = e.srcElement;
         if (b.dataset.toggled == "true") {
             b.dataset.toggled = "false";
         } else {
             b.dataset.toggled = "true";
+            for (let i = 0; i < 10; i++) {
+                document.getElementById('opponent').rows[i].addEventListener("mouseover", getRowIndex);
+                document.getElementById('opponent').rows[i].addEventListener("mouseout", cleanRow);
+                for (let j = 0; j < 10; j++) {
+                    document.getElementById('opponent').rows[i].cells[j].addEventListener("mouseover", getCellIndex);
+                    document.getElementById('opponent').rows[i].cells[j].addEventListener("mouseout", cleanCell);
+                }
+            }
         };
     });
-    document.getElementById("reset").addEventListener("click", function(e) {
+    document.getElementById("reset").addEventListener("click", function (e) {
         window.location.reload(false);
     });
     disableGrid(document.getElementById("opponent"));
-    sendXhr("GET", "/game", {}, function(data) {
+    sendXhr("GET", "/game", {}, function (data) {
         game = data;
     });
 };
