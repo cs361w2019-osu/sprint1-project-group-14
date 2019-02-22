@@ -266,7 +266,7 @@ function redBlink(grid) {
     grid.style.border = "2px solid red";
     markActionBar(grid.getAttribute("id"), "-");
     window.setTimeout(function(){
-        grid.style.border = "1px solid black";
+        grid.style.border = "";
     }, 200);
 }
 
