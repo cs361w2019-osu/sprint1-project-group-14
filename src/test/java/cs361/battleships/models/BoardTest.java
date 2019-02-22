@@ -59,7 +59,6 @@ public class BoardTest {
         assertTrue(board.placeShip(s, 3, 'A', true));
         Ship s2 = ShipFactory.createShip("DESTROYER");
         assertFalse(board.placeShip(s2, 4, 'A', false));
-
         assertTrue(board.placeShip(s2, 5, 'A', false));
     }
 
@@ -76,7 +75,6 @@ public class BoardTest {
     @Test
     public void testAttackCollision() {
         Board board = new Board();
-
         Ship s = ShipFactory.createShip("DESTROYER");
         board.placeShip(s, 3, 'C', true);
         assertSame(board.attack(5, 'C').getResult(), AtackStatus.HIT);

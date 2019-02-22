@@ -79,5 +79,4 @@ public class Game {
     private boolean randVertical() {
         return new Random().nextInt(2) > 0.5;
     }
-
 }
