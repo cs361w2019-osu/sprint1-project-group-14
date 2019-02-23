@@ -2,18 +2,19 @@
 -------------------------------------------------- */
 
 .battleGrid {
-    border: 1px solid black;
-    border-spacing: 0px;
+    /* border: 1px solid black; */
+    border-spacing: 5px;
 }
 
 .battleGrid tr {
-    border: 1px solid black;
+    border: 0.2px solid black;
     height: 30px;
 }
 
 .battleGrid td {
-    border: 1px solid black;
+    border: 0.2px solid black;
     width: 30px;
+    box-shadow: 1px 1px 5px;
 }
 #is_vertical{
     margin-bottom:10px;
@@ -35,36 +36,37 @@
 }
 
 .ship {
-    border: 1px solid black;
-    border-spacing: 0px;
+    border-spacing: 5px;
 
     margin: 10px;
 }
 
 .ship tr {
-    border: 1px solid black;
+    border: 0.2px solid black;
     height: 30px;
+    border-spacing: 5px;
 }
 
 .ship td {
-    border: 1px solid black;
+    border: 0.2px solid black;
+    box-shadow: 1px 1px 5px;
     width: 30px;
 }
 
 
-.ship[data-selected="true"] {
+.ship[data-selected="true"] td {
     background-color: blue;
 }
 
-.ship:hover {
+.ship:hover td{
     background-color: gray;
 }
 
-.ship[data-placed="true"] {
+.ship[data-placed="true"] td {
     background-color: black;
 }
 
-.ship[data-sunk="true"] {
+.ship[data-sunk="true"] td {
     background-color: red;
 }
 
@@ -272,3 +274,54 @@
     color: white;
     border-radius: 4px;
 }
+
+.button-3d {
+  position: relative;
+  top: 0;
+  -webkit-box-shadow: 0 7px 0 #bbbbbb, 0 8px 3px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 7px 0 #bbbbbb, 0 8px 3px rgba(0, 0, 0, 0.2); }
+  .button-3d:hover, .button-3d:focus {
+    -webkit-box-shadow: 0 7px 0 #bbbbbb, 0 8px 3px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 7px 0 #bbbbbb, 0 8px 3px rgba(0, 0, 0, 0.2); }
+  .button-3d:active, .button-3d.active, .button-3d.is-active {
+    top: 5px;
+    -webkit-transition-property: all;
+            transition-property: all;
+    -webkit-transition-duration: .15s;
+            transition-duration: .15s;
+    -webkit-box-shadow: 0 2px 0 #bbbbbb, 0 3px 3px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 0 #bbbbbb, 0 3px 3px rgba(0, 0, 0, 0.2); }
+
+.button-caution,
+.button-caution-flat {
+  background-color: #FF4351;
+  border-color: #FF4351;
+  color: #FFF; }
+  .button-caution:visited,
+  .button-caution-flat:visited {
+    color: #FFF; }
+  .button-caution:hover, .button-caution:focus,
+  .button-caution-flat:hover,
+  .button-caution-flat:focus {
+    background-color: #ff7680;
+    border-color: #ff7680;
+    color: #FFF; }
+  .button-caution:active, .button-caution.active, .button-caution.is-active,
+  .button-caution-flat:active,
+  .button-caution-flat.active,
+  .button-caution-flat.is-active {
+    background-color: #f64c59;
+    border-color: #f64c59;
+    color: #ff1022; }
+
+
+
+.button-3d.button-caution {
+  -webkit-box-shadow: 0 7px 0 #ff1022, 0 8px 3px rgba(0, 0, 0, 0.3);
+          box-shadow: 0 7px 0 #ff1022, 0 8px 3px rgba(0, 0, 0, 0.3); }
+  .button-3d.button-caution:hover, .button-3d.button-caution:focus {
+    -webkit-box-shadow: 0 7px 0 #ff0618, 0 8px 3px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 7px 0 #ff0618, 0 8px 3px rgba(0, 0, 0, 0.3); }
+  .button-3d.button-caution:active, .button-3d.button-caution.active, .button-3d.button-caution.is-active {
+    -webkit-box-shadow: 0 2px 0 #dc0010, 0 3px 3px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 0 #dc0010, 0 3px 3px rgba(0, 0, 0, 0.2); }
