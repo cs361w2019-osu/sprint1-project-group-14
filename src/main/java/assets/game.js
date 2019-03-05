@@ -2,10 +2,6 @@ var isSetup = true;
 var isPlayerTurn = true;
 var gameOver = 0;
 var placedShips = 0;
-var hoverCellIndex = 0;
-var outCellIndex = 0;
-var hoverRowIndex = 0;
-var outRowIndex = 0;
 var game;
 var shipType;
 var vertical;
@@ -82,21 +78,14 @@ function sonarPulse(board, col, row, target) {
             }
         }
     }
-
-    for (let i = 0; i < 10; i++) {
-        document.getElementById('opponent').rows[i].removeEventListener("mouseover", getRowIndex);
-        document.getElementById('opponent').rows[i].removeEventListener("mouseout", cleanRow);
-
-        for (let j = 0; j < 10; j++) {
-            document.getElementById('opponent').rows[i].cells[j].removeEventListener("mouseover", getCellIndex);
-            document.getElementById('opponent').rows[i].cells[j].removeEventListener("mouseout", cleanCell);
-        }
-    }
-
 }
 
 var getCellIndex = function (e) {
-    hoverCellIndex = e.srcElement.cellIndex;
+    if (document.getElementById("sonar_pulse").dataset.toggled === "false")
+        return;
+
+    var hoverCellIndex = e.srcElement.cellIndex;
+    var hoverRowIndex = e.target.parentNode.rowIndex+1;
 
     for (i = hoverRowIndex - 2; i <= hoverRowIndex + 2; i++) {
         for (j = hoverCellIndex - 2; j <= hoverCellIndex + 2; j++) {
@@ -106,12 +95,10 @@ var getCellIndex = function (e) {
         }
     }
 }
-var getRowIndex = function (e) {
-    hoverRowIndex = e.path[1].rowIndex;
-}
 
 var cleanCell = function (e) {
-    outCellIndex = e.srcElement.cellIndex;
+    var outCellIndex = e.srcElement.cellIndex;
+    var outRowIndex = e.target.parentNode.rowIndex+1;
 
     for (i = outRowIndex - 2; i <= outRowIndex + 2; i++) {
         for (j = outCellIndex - 2; j <= outCellIndex + 2; j++) {
@@ -120,10 +107,6 @@ var cleanCell = function (e) {
             }
         }
     }
-}
-
-var cleanRow = function (e) {
-    outRowIndex = e.path[1].rowIndex;
 }
 
 function markActionBar(person, result) {
@@ -165,6 +148,12 @@ function enableGrid(grid) {
 }
 
 function redrawGrid(person) {
+    for (let i = 0; i < 10; i++) {
+        for (let j = 0; j < 10; j++) {
+            document.getElementById('opponent').rows[i].cells[j].removeEventListener("mouseover", getCellIndex);
+            document.getElementById('opponent').rows[i].cells[j].removeEventListener("mouseout", cleanCell);
+        }
+    }
     Array.from(document.getElementById(person).childNodes).forEach((row) => row.remove());
     makeGrid(document.getElementById(person));
 
@@ -189,6 +178,12 @@ function redrawGrid(person) {
         }
         document.getElementById(e).dataset.sunk = "true";
     })
+    for (let i = 0; i < 10; i++) {
+        for (let j = 0; j < 10; j++) {
+            document.getElementById('opponent').rows[i].cells[j].addEventListener("mouseover", getCellIndex);
+            document.getElementById('opponent').rows[i].cells[j].addEventListener("mouseout", cleanCell);
+        }
+    }
 }
 
 var oldListener;
@@ -285,7 +280,8 @@ function cellClick() {
                 endOpponentTurn()
             }, 1000);
         });
-        document.getElementById("sonar_pulse").dataset.toggled = "false"
+        document.getElementById("sonar_pulse").dataset.toggled = "false";
+        document.getElementById("sonar_pulse").innerHTML = "<i class=\"fas fa-broadcast-tower\"></i>&nbsp;Sonar: Off";
     } else if (isPlayerTurn) {
         sendXhr("POST", "/attack", { game: game, x: row, y: col }, function (data) {
             game = data;
@@ -459,17 +455,11 @@ function initGame() {
     document.getElementById("sonar_pulse").addEventListener("click", function (e) {
         let b = e.srcElement;
         if (b.dataset.toggled == "true") {
+            b.innerHTML = "<i class=\"fas fa-broadcast-tower\"></i>&nbsp;Sonar: Off"
             b.dataset.toggled = "false";
         } else {
+            b.innerHTML = "<i class=\"fas fa-broadcast-tower\"></i>&nbsp;Sonar: On"
             b.dataset.toggled = "true";
-            for (let i = 0; i < 10; i++) {
-                document.getElementById('opponent').rows[i].addEventListener("mouseover", getRowIndex);
-                document.getElementById('opponent').rows[i].addEventListener("mouseout", cleanRow);
-                for (let j = 0; j < 10; j++) {
-                    document.getElementById('opponent').rows[i].cells[j].addEventListener("mouseover", getCellIndex);
-                    document.getElementById('opponent').rows[i].cells[j].addEventListener("mouseout", cleanCell);
-                }
-            }
         };
     });
     document.getElementById("reset").addEventListener("click", function (e) {

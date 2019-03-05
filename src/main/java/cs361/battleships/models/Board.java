@@ -149,7 +149,13 @@ public class Board {
 
         return outcome;
 	}
-
+	/**
+	 * Sets the location that the sonar is hit
+	 * Stores the action in the history
+	 * @param x set X coordinate of the sonar square.
+	 * @param y set Y coordinate of the sonar square.
+	 * @return Result the outcome of the sonar.
+	 */
 	public Result sonar(int x, char y) {
 		Result outcome = new Result();
 		if (sonarCount <= 0) {
