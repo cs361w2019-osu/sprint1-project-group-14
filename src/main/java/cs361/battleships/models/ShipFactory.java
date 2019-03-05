@@ -12,6 +12,7 @@ public class ShipFactory {
         if (ship.equals("DESTROYER")) return new Destroyer();
         else if (ship.equals("MINESWEEPER")) return new Minesweeper();
         else if (ship.equals("BATTLESHIP")) return new Battleship();
+        else if (ship.equals("SUBMARINE")) return new Submarine();
         else return null;
     }
 }

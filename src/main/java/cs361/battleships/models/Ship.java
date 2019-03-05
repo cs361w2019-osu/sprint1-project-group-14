@@ -13,11 +13,14 @@ import java.util.List;
 		@JsonSubTypes.Type(value=Battleship.class, name="BATTLESHIP"),
 		@JsonSubTypes.Type(value=Minesweeper.class, name="MINESWEEPER"),
 		@JsonSubTypes.Type(value=Destroyer.class, name="DESTROYER"),
+		@JsonSubTypes.Type(value=Submarine.class, name="SUBMARINE"),
 })
 public abstract class Ship {
 	/**
 	 * Updates the occupied squares based on starting square
 	 * and whether the ship was placed vertically.
+	 *
+	 * Ship needs to have width of 1.
 	 *
 	 * If the ship was placed horizontally, the left most square is the
 	 * start. If the ship was placed vertically, the top most square
@@ -84,6 +87,11 @@ public abstract class Ship {
 	 * @return int ship length.
 	 */
 	public abstract int getLength();
+
+	/**
+	 * @return int ship width.
+	 */
+	public abstract int getWidth();
 
 	/**
 	 * @return List<Square> squares the ship occupies.

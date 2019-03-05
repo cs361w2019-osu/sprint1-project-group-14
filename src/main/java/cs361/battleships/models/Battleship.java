@@ -9,12 +9,12 @@ import java.util.List;
 @JsonTypeName("battleship")
 public class Battleship extends Ship {
     private final int LENGTH = 4;
+    private final int WIDTH = 1;
     private final String NAME = "BATTLESHIP";
     private final int CAPTAIN_INDEX = 2;
 
     @JsonProperty
     private List<Square> occupiedSquares;
-
     @JsonProperty
     private int[] health = {1, 1, 2, 1};
 
@@ -37,6 +37,11 @@ public class Battleship extends Ship {
     @JsonIgnore
     public int getLength() {
         return LENGTH;
+    }
+
+    @JsonIgnore
+    public int getWidth() {
+        return WIDTH;
     }
 
     public List<Square> getOccupiedSquares() {
