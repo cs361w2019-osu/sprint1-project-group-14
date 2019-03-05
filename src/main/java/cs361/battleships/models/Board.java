@@ -73,11 +73,8 @@ public class Board {
 		List<Square> thisOccupied = ship.getOccupiedSquares();
 
 		for (Ship s : ships) {
-			List<Square> otherOccupied = s.getOccupiedSquares();
-			for (Square sq : otherOccupied) {
-				if (thisOccupied.contains(sq)) {
-					return false;
-				}
+			if (!ship.checkNoCollision(s)) {
+				return false;
 			}
 		}
 

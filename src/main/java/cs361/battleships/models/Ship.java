@@ -79,6 +79,22 @@ public abstract class Ship {
     }
 
 	/**
+	 * Check to see if this ship is not colliding with other ship.
+	 * @param other ship to compare against
+	 * @return boolean if collision did not occurred.
+	 */
+	protected boolean checkNoCollision(Ship other) {
+		List<Square> thisOccupied = this.getOccupiedSquares();
+		List<Square> otherOccupied = other.getOccupiedSquares();
+		for (Square sq : otherOccupied) {
+			if (thisOccupied.contains(sq)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
 	 * Decrements the health of a ship part given a health array.
 	 *
 	 * @param health int[] array of ship part health
