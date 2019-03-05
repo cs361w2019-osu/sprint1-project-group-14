@@ -361,6 +361,33 @@ function place(size) {
     }
 }
 
+// More customizable highlighting. Takes in template position 0-indexed
+// length of highlight for vertical rotation.
+function place2D(pos, len) {
+    return function () {
+        let row = this.parentNode.rowIndex;
+        let col = this.cellIndex;
+        vertical = (document.getElementById("is_vertical").dataset.toggled) == "true";
+        let table = document.getElementById("player");
+
+        pos.forEach(function(cord) {
+            let row_off = cord[0];
+            let col_off = cord[1];
+            let cell;
+            if (vertical) {
+                let temp = row_off;
+                row_off = col_off;
+                col_off = len - temp - 3;
+            }
+
+            cell = table.rows[row+row_off].cells[col+col_off];
+            if (cell !== undefined) {
+                cell.classList.toggle("placed");
+            }
+        });
+    }
+}
+
 function initGame() {
     let p_ships = ["place_minesweeper", "place_destroyer", "place_battleship", "place_submarine"];
     makeGrid(document.getElementById("opponent"), false);
@@ -438,7 +465,7 @@ function initGame() {
         s.dataset.selected = "true";
 
         if (s.dataset.placed == "false" && isPlayerTurn) {
-            registerCellListener(place(4));
+            registerCellListener(place2D([[1,0], [1,1], [1,2], [1,3], [0,2]], 4));
         }
     });
 
