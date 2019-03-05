@@ -22,7 +22,7 @@ public class Destroyer extends Ship {
     }
 
     public void initialize(int r, char c, boolean isVert) {
-        occupiedSquares = getNewShipPosition(r, c, isVert, LENGTH);
+        occupiedSquares = getNewShipPosition1D(r, c, isVert, LENGTH);
     }
 
     public boolean registerAttack(Square s, Weapon w) {

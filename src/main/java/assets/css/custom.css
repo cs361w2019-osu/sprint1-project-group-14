@@ -53,6 +53,10 @@
     width: 30px;
 }
 
+.invisible {
+    visibility: hidden;
+}
+
 
 .ship[data-selected="true"] td {
     background-color: blue;

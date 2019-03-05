@@ -14,12 +14,14 @@ var statusBar = document.getElementsByClassName("status-bar")[0];
 var playerShipsMap = {
     "MINESWEEPER": "place_minesweeper",
     "DESTROYER": "place_destroyer",
-    "BATTLESHIP": "place_battleship"
+    "BATTLESHIP": "place_battleship",
+    "SUBMARINE": "place_submarine",
 };
 var opponentShipsMap = {
     "MINESWEEPER": "opponent_minesweeper",
     "DESTROYER": "opponent_destroyer",
-    "BATTLESHIP": "opponent_battleship"
+    "BATTLESHIP": "opponent_battleship",
+    "SUBMARINE": "opponent_submarine",
 };
 
 function makeGrid(table) {
@@ -245,7 +247,7 @@ function cellClick() {
             placedShips++;
             redrawGrid("player");
             redrawGrid("opponent");
-            if (placedShips == 3) {
+            if (placedShips == 4) {
                 isSetup = false;
                 registerCellListener((e) => { });
             }
@@ -364,7 +366,7 @@ function place(size) {
 }
 
 function initGame() {
-    let p_ships = ["place_minesweeper", "place_destroyer", "place_battleship"];
+    let p_ships = ["place_minesweeper", "place_destroyer", "place_battleship", "place_submarine"];
     makeGrid(document.getElementById("opponent"), false);
     makeGrid(document.getElementById("player"), true);
     statusBar.innerText = "Place your ship.";
@@ -424,6 +426,26 @@ function initGame() {
             registerCellListener(place(4));
         }
     });
+
+    document.getElementById("place_submarine").addEventListener("click", function (e) {
+        if (!isPlayerTurn) {
+            return
+        }
+        shipType = "SUBMARINE";
+        let s = document.getElementById("place_submarine");
+        p_ships.forEach(function (ship) {
+            let s = document.getElementById(ship);
+            if (s.dataset.placed == "false") {
+                s.dataset.selected = "false";
+            };
+        });
+        s.dataset.selected = "true";
+
+        if (s.dataset.placed == "false" && isPlayerTurn) {
+            registerCellListener(place(4));
+        }
+    });
+
     document.getElementById("is_vertical").addEventListener("click", function (e) {
         let b = e.srcElement;
         if (b.dataset.toggled == "true") {

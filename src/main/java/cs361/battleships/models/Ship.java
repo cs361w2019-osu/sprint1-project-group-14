@@ -17,7 +17,7 @@ import java.util.List;
 })
 public abstract class Ship {
 	/**
-	 * Updates the occupied squares based on starting square
+	 * Creates the occupied squares based on starting square
 	 * and whether the ship was placed vertically.
 	 *
 	 * Ship needs to have width of 1.
@@ -33,7 +33,7 @@ public abstract class Ship {
 	 * @param c char starting column
 	 * @param isVert boolean whether the ship is placed vertically
 	 */
-	protected List<Square> getNewShipPosition(int r, char c, boolean isVert, int len) {
+	protected List<Square> getNewShipPosition1D(int r, char c, boolean isVert, int len) {
 		List<Square> occupiedSquares = new ArrayList<>();
 		for (int i = 0; i < len; i++) {
 			if (isVert) {
@@ -44,6 +44,39 @@ public abstract class Ship {
 		}
 		return occupiedSquares;
 	}
+
+    /**
+     * Updates the occupied squares based on starting square
+     * and whether the ship was placed vertically for 2D ships based
+     * on horizontal template.
+     *
+     * If the ship was placed horizontally, the left most square is the
+     * start. If the ship was placed vertically, the top most square
+     * is the start.
+     *
+     * Assuming unbounded grid. Check boundries before calling this
+     * method.
+     *
+     * @param r int starting row
+     * @param c char starting column
+     * @param isVert boolean whether the ship is placed vertically
+     */
+	protected void placeNewShipPosition2D(int r, char c, boolean isVert, int length, List<Square> occupied) {
+        // Rotate template
+        if (isVert) {
+            for (Square sq : occupied) {
+            	int row = sq.getRow();
+            	sq.setRow(sq.getColumn()+1-'A');
+            	sq.setColumn((char) (length-row-2+'A'));
+            }
+        }
+
+        // Move ship
+        for (Square sq : occupied) {
+            sq.setRow(sq.getRow()+r-1);
+            sq.setColumn((char) (sq.getColumn()+c-'A'));
+        }
+    }
 
 	/**
 	 * Decrements the health of a ship part given a health array.
