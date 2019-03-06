@@ -53,6 +53,10 @@
     width: 30px;
 }
 
+.invisible {
+    visibility: hidden;
+}
+
 
 .ship[data-selected="true"] td {
     background-color: blue;
@@ -70,7 +74,7 @@
     background-color: red;
 }
 
-.battleGrid td:hover {
+#opponent td:hover {
     background-color: gray;
 }
 

@@ -14,7 +14,7 @@
     </table>
     <div class="ships" id="board_plane">
         <button class="button button-royal button-rounded" id="is_vertical" data-toggled="false">Mode: Horizontal</button>
-        <button class="button button-3d button-caution" id="sonar_pulse" data-toggled="false"><i class="fas fa-broadcast-tower"></i>&nbsp;Sonar</button>
+        <button class="button button-3d button-caution" id="sonar_pulse" data-toggled="false"><i class="fas fa-broadcast-tower"></i>&nbsp;Sonar: Off</button>
         <table class="ship" id="place_minesweeper" data-sunk="false" data-selected="false" data-placed="false">
             <tr>
                 <td></td>
@@ -29,6 +29,21 @@
             </tr>
         </table>
         <table class="ship" id="place_battleship" data-sunk="false" data-selected="false" data-placed="false">
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+
+        <table class="ship" id="place_submarine" data-sunk="false" data-selected="false" data-placed="false">
+            <tr>
+                <td class="invisible"></td>
+                <td class="invisible"></td>
+                <td></td>
+                <td class="invisible"></td>
+            </tr>
             <tr>
                 <td></td>
                 <td></td>
@@ -60,6 +75,20 @@
             </tr>
         </table>
         <table class="ship" id="opponent_battleship" data-sunk="false" data-placed="false">
+            <tr>
+                <td class="disabled"></td>
+                <td class="disabled"></td>
+                <td class="disabled"></td>
+                <td class="disabled"></td>
+            </tr>
+        </table>
+        <table class="ship" id="opponent_submarine" data-sunk="false" data-placed="false">
+            <tr>
+                <td class="disabled invisible"></td>
+                <td class="disabled invisible"></td>
+                <td class="disabled"></td>
+                <td class="disabled invisible"></td>
+            </tr>
             <tr>
                 <td class="disabled"></td>
                 <td class="disabled"></td>

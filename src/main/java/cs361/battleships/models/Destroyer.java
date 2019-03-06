@@ -9,12 +9,12 @@ import java.util.List;
 @JsonTypeName("destroyer")
 public class Destroyer extends Ship {
     private final int LENGTH = 3;
+    private final int WIDTH = 1;
     private final String NAME = "DESTROYER";
     private final int CAPTAIN_INDEX = 1;
 
     @JsonProperty
     private List<Square> occupiedSquares;
-
     @JsonProperty
     private int[] health = {1, 2, 1};
 
@@ -22,7 +22,7 @@ public class Destroyer extends Ship {
     }
 
     public void initialize(int r, char c, boolean isVert) {
-        occupiedSquares = getNewShipPosition(r, c, isVert, LENGTH);
+        occupiedSquares = getNewShipPosition1D(r, c, isVert, LENGTH);
     }
 
     public boolean registerAttack(Square s, Weapon w) {
@@ -37,6 +37,11 @@ public class Destroyer extends Ship {
     @JsonIgnore
     public int getLength() {
         return LENGTH;
+    }
+
+    @JsonIgnore
+    public int getWidth() {
+        return WIDTH;
     }
 
     public List<Square> getOccupiedSquares() {

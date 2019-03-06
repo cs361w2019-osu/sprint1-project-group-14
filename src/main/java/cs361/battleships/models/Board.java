@@ -42,6 +42,14 @@ public class Board {
 		}
 
 		int shipLength = ship.getLength();
+		int shipWidth = ship.getWidth();
+
+		// Length and width are swapped if placed vertically
+		if (isVertical) {
+			int temp = shipLength;
+			shipLength = shipWidth;
+			shipWidth = temp;
+		}
 
 		// User cannot place outside of grid
 		if (x < 1 || x > 10 || y < 'A' || y > 'J') {
@@ -49,8 +57,7 @@ public class Board {
 		}
 
 		// Ship cannot go off grid
-		if ((isVertical && x + shipLength > 11) ||
-				(!isVertical && (char) y + shipLength > 'K')) {
+		if (x + shipWidth - 1 > 10 || y + shipLength - 1 > 'J') {
 			return false;
 		}
 
@@ -66,11 +73,8 @@ public class Board {
 		List<Square> thisOccupied = ship.getOccupiedSquares();
 
 		for (Ship s : ships) {
-			List<Square> otherOccupied = s.getOccupiedSquares();
-			for (Square sq : otherOccupied) {
-				if (thisOccupied.contains(sq)) {
-					return false;
-				}
+			if (!ship.checkNoCollision(s)) {
+				return false;
 			}
 		}
 
@@ -142,7 +146,13 @@ public class Board {
 
         return outcome;
 	}
-
+	/**
+	 * Sets the location that the sonar is hit
+	 * Stores the action in the history
+	 * @param x set X coordinate of the sonar square.
+	 * @param y set Y coordinate of the sonar square.
+	 * @return Result the outcome of the sonar.
+	 */
 	public Result sonar(int x, char y) {
 		Result outcome = new Result();
 		if (sonarCount <= 0) {
