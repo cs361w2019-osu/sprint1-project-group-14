@@ -380,8 +380,10 @@ function place2D(pos, len) {
                 col_off = len - temp - 3;
             }
 
-            cell = table.rows[row+row_off].cells[col+col_off];
-            if (cell !== undefined) {
+            let r = table.rows[row+row_off]
+
+            if (r !== undefined && r.cells[col+col_off] !== undefined) {
+                cell = r.cells[col+col_off]
                 cell.classList.toggle("placed");
             }
         });
