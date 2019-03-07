@@ -132,10 +132,10 @@ var cleanCell = function (e) {
         }
     }
 }
-
 var cleanRow = function (e) {
     outRowIndex = e.path[1].rowIndex;
 }
+
 
 function markActionBar(person, result) {
     personUpper = person.replace(/\b\w/g, function (l) { return l.toUpperCase() })
@@ -176,6 +176,12 @@ function enableGrid(grid) {
 }
 
 function redrawGrid(person) {
+    for (let i = 0; i < 10; i++) {
+        for (let j = 0; j < 10; j++) {
+            document.getElementById('opponent').rows[i].cells[j].removeEventListener("mouseover", getCellIndex);
+            document.getElementById('opponent').rows[i].cells[j].removeEventListener("mouseout", cleanCell);
+        }
+    }
     Array.from(document.getElementById(person).childNodes).forEach((row) => row.remove());
     makeGrid(document.getElementById(person));
 
@@ -200,6 +206,12 @@ function redrawGrid(person) {
         }
         document.getElementById(e).dataset.sunk = "true";
     })
+    for (let i = 0; i < 10; i++) {
+        for (let j = 0; j < 10; j++) {
+            document.getElementById('opponent').rows[i].cells[j].addEventListener("mouseover", getCellIndex);
+            document.getElementById('opponent').rows[i].cells[j].addEventListener("mouseout", cleanCell);
+        }
+    }
 }
 
 var oldListener;
@@ -296,7 +308,8 @@ function cellClick() {
                 endOpponentTurn()
             }, 1000);
         });
-        document.getElementById("sonar_pulse").dataset.toggled = "false"
+        document.getElementById("sonar_pulse").dataset.toggled = "false";
+        document.getElementById("sonar_pulse").innerHTML = "<i class=\"fas fa-broadcast-tower\"></i>&nbsp;Sonar: Off";
     } else if (isPlayerTurn) {
         sendXhr("POST", "/attack", { game: game, x: row, y: col }, function (data) {
             game = data;
@@ -450,17 +463,11 @@ function initGame() {
     document.getElementById("sonar_pulse").addEventListener("click", function (e) {
         let b = e.srcElement;
         if (b.dataset.toggled == "true") {
+            b.innerHTML = "<i class=\"fas fa-broadcast-tower\"></i>&nbsp;Sonar: Off"
             b.dataset.toggled = "false";
         } else {
+            b.innerHTML = "<i class=\"fas fa-broadcast-tower\"></i>&nbsp;Sonar: On"
             b.dataset.toggled = "true";
-            for (let i = 0; i < 10; i++) {
-                document.getElementById('opponent').rows[i].addEventListener("mouseover", getRowIndex);
-                document.getElementById('opponent').rows[i].addEventListener("mouseout", cleanRow);
-                for (let j = 0; j < 10; j++) {
-                    document.getElementById('opponent').rows[i].cells[j].addEventListener("mouseover", getCellIndex);
-                    document.getElementById('opponent').rows[i].cells[j].addEventListener("mouseout", cleanCell);
-                }
-            }
         };
     });
     document.getElementById("reset").addEventListener("click", function (e) {
