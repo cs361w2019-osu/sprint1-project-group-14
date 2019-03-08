@@ -7,11 +7,15 @@ import cs361.battleships.models.Game;
 public class MoveGameAction {
 	@JsonProperty private Game game;
 	@JsonProperty private Direction dir;
+	@JsonProperty private String player;
 
 	public Game getGame() {
 		return game;
 	}
 	public Direction getDir() {
 		return dir;
+	}
+	public String getPlayer(){
+		return player;
 	}
 }

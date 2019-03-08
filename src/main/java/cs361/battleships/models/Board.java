@@ -19,7 +19,6 @@ public class Board {
 	@JsonProperty private List<Result> attacks;
 	@JsonProperty private List<Ship> sunkShips;
 	@JsonProperty private int sonarCount;
-	@JsonProperty private int moveCount;
 	@JsonProperty private Weapon currentWeapon;
 
 	/*
@@ -30,7 +29,6 @@ public class Board {
 		attacks = new ArrayList<>();
 		sunkShips = new ArrayList<>();
 		sonarCount = -1;
-		moveCount = -2;
 		currentWeapon = Weapon.BOMB;
 	}
 
@@ -144,13 +142,6 @@ public class Board {
 				sonarCount = 2;
 				weaponUp();
 			}
-
-			// If two ships are sunk, give movement
-			if (moveCount == -2) {
-				moveCount = -1;
-			} else if (moveCount == -1) {
-				moveCount = 2;
-			}
         }
 
         // If all ships were sunk trigger surrender.
@@ -189,7 +180,7 @@ public class Board {
 	 * @param dir Direction to move the fleet.
 	 * @return Result the outcome of the move.
 	 */
-	public Result move(Direction dir) {
+	public Result move(Direction dir, int moveCount) {
 		Result outcome = new Result();
 		if (moveCount <= 0) {
 			outcome.setResult(INVALID);
@@ -200,7 +191,6 @@ public class Board {
 		moveAll(dir);
 		fixCollisions(dir);
 
-		moveCount--;
 		attacks.add(outcome);
 		return outcome;
 	}
@@ -274,9 +264,10 @@ public class Board {
 			rev.put(EAST, WEST);
 			if (!ships.get(index).isSunk())
 				moveShip(rev.get(dir), index);
+				moved.add(index);
 
 			for (int i = 0; i < ships.size(); i++) {
-				if (index !=  i && moved.indexOf(i) == -1 && !ships.get(index).checkNoCollision(ships.get(i))) {
+				if (moved.indexOf(i) == -1 && !ships.get(index).checkNoCollision(ships.get(i))) {
 					OOBShips.add(i);
 				}
 			}

@@ -5,11 +5,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Random;
 
 import static cs361.battleships.models.AtackStatus.INVALID;
+import static cs361.battleships.models.AtackStatus.SUNK;
 
 public class Game {
 
     @JsonProperty private Board playersBoard = new Board();
     @JsonProperty private Board opponentsBoard = new Board();
+    @JsonProperty private int playerMoveCount = -2;
+    @JsonProperty private int opponentMoveCount = -2;
 
     /*
 	DO NOT change the signature of this method. It is used by the grading scripts.
@@ -36,6 +39,13 @@ public class Game {
         Result playerAttack = opponentsBoard.attack(x, y);
         if (playerAttack.getResult() == INVALID) {
             return false;
+        } else if (playerAttack.getResult() == SUNK) {
+            // If two ships are sunk, give movement
+            if (playerMoveCount == -2) {
+                playerMoveCount = -1;
+            } else if (playerMoveCount == -1) {
+                playerMoveCount = 2;
+            }
         }
 
         Result opponentAttackResult;
@@ -59,10 +69,22 @@ public class Game {
         return true;
     }
 
-    public boolean move(Direction dir) {
-        Result playerMove = playersBoard.move(dir);
+    public boolean move(Direction dir, String player) {
+        Result playerMove;
+        if (player.equals("player")) {
+            playerMove = playersBoard.move(dir, playerMoveCount);
+        } else {
+            playerMove = opponentsBoard.move(dir, opponentMoveCount);
+        }
+
         if (playerMove.getResult() == INVALID) {
             return false;
+        }
+
+        if (player.equals("player")) {
+            playerMoveCount--;
+        } else {
+            opponentMoveCount--;
         }
 
         return true;

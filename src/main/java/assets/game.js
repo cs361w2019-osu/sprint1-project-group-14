@@ -45,6 +45,8 @@ function markHits(board, elementId, surrenderNum) {
             className = "sonar";
             sonarPulse(board, attack.location.column, attack.location.row, elementId);
         }
+        else if (attack.result === "MOVE")
+            className = "move";
         else if (attack.result === "SUNK")
             className = "sunk";
         else if (attack.result === "SURRENDER") {
@@ -52,7 +54,7 @@ function markHits(board, elementId, surrenderNum) {
             surrender = surrenderNum;
         }
 
-        if (className !== "sonar") {
+        if (className !== "sonar" && className !== "move") {
             document.getElementById(elementId).rows[attack.location.row - 1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add(className);
         }
         markActionBar(elementId, className);
@@ -402,7 +404,7 @@ function place2D(pos, len) {
 function registerMove(dirs) {
     dirs.forEach(function(dir) {
         document.getElementById("move_fleet_" + dir).addEventListener("click", function (e) {
-            sendXhr("POST", "/move", { game: game, dir:dir.toUpperCase()}, function (data) {
+            sendXhr("POST", "/move", { game: game, dir:dir.toUpperCase(), player: "player"}, function (data) {
                 game = data;
                 redrawGrid('player');
             });
