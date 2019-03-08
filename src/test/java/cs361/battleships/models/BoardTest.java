@@ -149,6 +149,116 @@ public class BoardTest {
     }
 
     @Test
+    public void testNoMoveCharges() {
+        Board board = new Board();
+        Ship s = ShipFactory.createShip("MINESWEEPER");
+        board.placeShip(s, 1, 'A', false);
+
+        assertSame(board.move(Direction.EAST).getResult(), AtackStatus.INVALID);
+    }
+
+    @Test
+    public void testMove1Ship() {
+        Board board = new Board();
+        Ship b = ShipFactory.createShip("BATTLESHIP");
+        board.placeShip(b, 1, 'A', false);
+
+        Ship d = ShipFactory.createShip("DESTROYER");
+        Ship s = ShipFactory.createShip("MINESWEEPER");
+        board.placeShip(d, 4, 'D', false);
+        board.placeShip(s, 2, 'C', true);
+
+        board.attack(4, 'E');
+        board.attack(4, 'E');
+        board.attack(2, 'C');
+
+        assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getRow(), 1);
+        assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getColumn(), 'A');
+
+        assertSame(board.move(Direction.EAST).getResult(), AtackStatus.MOVE);
+
+        assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getRow(), 1);
+        assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getColumn(), 'B');
+    }
+    @Test
+    public void testMove2ShipRow() {
+        Board board = new Board();
+        Ship b = ShipFactory.createShip("BATTLESHIP");
+        board.placeShip(b, 1, 'A', false);
+
+        Ship sub = ShipFactory.createShip("SUBMARINE");
+        board.placeShip(sub, 2, 'D', false);
+
+        Ship d = ShipFactory.createShip("DESTROYER");
+        Ship s = ShipFactory.createShip("MINESWEEPER");
+        board.placeShip(d, 4, 'D', false);
+        board.placeShip(s, 2, 'C', true);
+
+        board.attack(4, 'E');
+        board.attack(4, 'E');
+        board.attack(2, 'C');
+
+
+        assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getRow(), 1);
+        assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getColumn(), 'A');
+
+        assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getRow(), 3);
+        assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getColumn(), 'D');
+
+        assertSame(board.move(Direction.NORTH).getResult(), AtackStatus.MOVE);
+
+        assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getRow(), 1);
+        assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getColumn(), 'A');
+
+        assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getRow(), 2);
+        assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getColumn(), 'D');
+    }
+
+    @Test
+    public void testMove2ShipCol() {
+        Board board = new Board();
+        Ship b = ShipFactory.createShip("BATTLESHIP");
+        board.placeShip(b, 1, 'A', false);
+
+        Ship sub = ShipFactory.createShip("SUBMARINE");
+        board.placeShip(sub, 7, 'E', false);
+
+        Ship d = ShipFactory.createShip("DESTROYER");
+        Ship s = ShipFactory.createShip("MINESWEEPER");
+        board.placeShip(d, 4, 'D', false);
+        board.placeShip(s, 2, 'C', true);
+
+        board.attack(4, 'E');
+        board.attack(4, 'E');
+        board.attack(2, 'C');
+
+
+        assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getRow(), 1);
+        assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getColumn(), 'A');
+
+        assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getRow(), 8);
+        assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getColumn(), 'E');
+
+        assertSame(board.move(Direction.WEST).getResult(), AtackStatus.MOVE);
+
+        assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getRow(), 1);
+        assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getColumn(), 'A');
+
+        assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getRow(), 8);
+        assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getColumn(), 'D');
+
+        assertSame(board.move(Direction.EAST).getResult(), AtackStatus.MOVE);
+
+        assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getRow(), 1);
+        assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getColumn(), 'B');
+
+        assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getRow(), 8);
+        assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getColumn(), 'E');
+
+        assertSame(board.move(Direction.EAST).getResult(), AtackStatus.INVALID);
+    }
+
+    @Test
     public void testNoSonarCharges() {
         Board board = new Board();
         assertSame(board.sonar(4,'D').getResult(), AtackStatus.INVALID);
