@@ -381,3 +381,11 @@
    border:0px;
    margin-top:-5px;
 }
+
+.empty_holder{
+   width:40px;
+   height:135px;
+   background: transparent;
+   border:0px;
+   margin-top:-5px;
+}
