@@ -513,6 +513,18 @@ function initGame() {
         };
     });
 
+    document.getElementById("sub_depth_0").addEventListener("click", function (e) {
+        document.getElementById("sub_depth_0").dataset.selected = "true";
+        document.getElementById("sub_depth_1").dataset.selected = "false";
+        depth = 0;
+    });
+
+    document.getElementById("sub_depth_1").addEventListener("click", function (e) {
+        document.getElementById("sub_depth_1").dataset.selected = "true";
+        document.getElementById("sub_depth_0").dataset.selected = "false";
+        depth = 1;
+    });
+
     registerMove(['north','south','east','west'])
 
     document.getElementById("reset").addEventListener("click", function (e) {
