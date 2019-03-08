@@ -175,10 +175,16 @@ public class BoardTest {
         assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getRow(), 1);
         assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getColumn(), 'A');
 
+        assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getRow(), 4);
+        assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getColumn(), 'D');
+
         assertSame(board.move(Direction.EAST).getResult(), AtackStatus.MOVE);
 
         assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getRow(), 1);
         assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getColumn(), 'B');
+
+        assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getRow(), 4);
+        assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getColumn(), 'D');
     }
     @Test
     public void testMove2ShipRow() {

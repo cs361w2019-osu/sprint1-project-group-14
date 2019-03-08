@@ -2,10 +2,13 @@ package cs361.battleships.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.EnumMap;
 
-import java.util.*;
 
 import static cs361.battleships.models.AtackStatus.*;
 import static cs361.battleships.models.Direction.*;
