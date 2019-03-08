@@ -394,18 +394,14 @@
 
 .button_submarine{
     margin-top:10px;
-    margin-left:150px;
-    margin-right:-20px;
     height:35px;
     width:35px;
-    flat:right;
 }
 
 .submarine_button{
-    height:auto;
-    display:inline;
+    position: relative;
     margin-top:135px;
-    margin-left:-130px;
+    left: 20px;
 }
 
 .ship_extend{
