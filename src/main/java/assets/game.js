@@ -5,6 +5,7 @@ var placedShips = 0;
 var game;
 var shipType;
 var vertical;
+var currentWeapon = "BOMB";
 var statusBar = document.getElementsByClassName("status-bar")[0];
 
 var playerShipsMap = {
@@ -77,6 +78,13 @@ function sonarPulse(board, col, row, target) {
                 document.getElementById(target).rows[i - 1].cells[j].classList.add("sonar");
             }
         }
+    }
+}
+
+function checkWeapon(board) {
+    if (board.currentWeapon != currentWeapon) {
+        currentWeapon = board.currentWeapon;
+        alert("Your weapon has been upgraded!");
     }
 }
 
@@ -184,6 +192,7 @@ function redrawGrid(person) {
             document.getElementById('opponent').rows[i].cells[j].addEventListener("mouseout", cleanCell);
         }
     }
+    checkWeapon(game.opponentsBoard);
 }
 
 var oldListener;

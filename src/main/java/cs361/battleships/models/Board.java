@@ -1,6 +1,9 @@
 package cs361.battleships.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import java.util.ArrayList;
+import java.util.List;
 
 import java.util.*;
 
@@ -14,6 +17,7 @@ public class Board {
 	@JsonProperty private List<Ship> sunkShips;
 	@JsonProperty private int sonarCount;
 	@JsonProperty private int moveCount;
+	@JsonProperty private Weapon currentWeapon;
 
 	/*
 	DO NOT change the signature of this method. It is used by the grading scripts.
@@ -24,6 +28,7 @@ public class Board {
 		sunkShips = new ArrayList<>();
 		sonarCount = -1;
 		moveCount = -2;
+		currentWeapon = Weapon.BOMB;
 	}
 
 	/**
@@ -107,18 +112,17 @@ public class Board {
         outcome.setResult(MISS);
 
         // Check if shot hits a ship.
-        for (Ship s : ships) {
-            if (s.getOccupiedSquares().contains(outcome.getLocation())) {
-                outcome.setShip(s);
-                // It is a hit when the ship part runs out of HP
-                if (s.registerAttack(outcome.getLocation(), Weapon.BOMB)) {
+        for (Ship s : ships)
+			if (s.getOccupiedSquares().contains(outcome.getLocation())) {
+				outcome.setShip(s);
+				// It is a hit when the ship part runs out of HP
+				if (s.registerAttack(outcome.getLocation(), currentWeapon)) {
 					outcome.setResult(HIT);
 				} else {
-                	outcome.setResult(MISS);
+					outcome.setResult(MISS);
 				}
-                break;
-            }
-        }
+				break;
+			}
 
         // If the ship is sunk
         if (outcome.getShip() != null && outcome.getShip().isSunk()) {
@@ -132,9 +136,10 @@ public class Board {
 			}
 			sunkShips.add(outcome.getShip());
 
-			// If first ship is sunk, give sonars
+			// If first ship is sunk, give sonars, upgrade weapons
 			if (sonarCount == -1) {
 				sonarCount = 2;
+				weaponUp();
 			}
 
 			// If two ships are sunk, give movement
@@ -276,6 +281,11 @@ public class Board {
 	}
 	public List<Ship> getShips() {
 		return ships;
+	}
+
+	private void weaponUp() {
+		if (this.currentWeapon != Weapon.LASER)
+			currentWeapon = Weapon.LASER;
 	}
 
 	private void setSunkShipStatus(Ship s) {
