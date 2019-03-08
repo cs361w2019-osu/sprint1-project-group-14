@@ -1,6 +1,8 @@
 package cs361.battleships.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +15,7 @@ public class Board {
 	@JsonProperty private List<Result> attacks;
 	@JsonProperty private List<Ship> sunkShips;
 	@JsonProperty private int sonarCount;
+	@JsonProperty private Weapon currentWeapon;
 
 	/*
 	DO NOT change the signature of this method. It is used by the grading scripts.
@@ -22,6 +25,7 @@ public class Board {
 		attacks = new ArrayList<>();
 		sunkShips = new ArrayList<>();
 		sonarCount = -1;
+		currentWeapon = Weapon.BOMB;
 	}
 
 	/**
@@ -42,6 +46,14 @@ public class Board {
 		}
 
 		int shipLength = ship.getLength();
+		int shipWidth = ship.getWidth();
+
+		// Length and width are swapped if placed vertically
+		if (isVertical) {
+			int temp = shipLength;
+			shipLength = shipWidth;
+			shipWidth = temp;
+		}
 
 		// User cannot place outside of grid
 		if (x < 1 || x > 10 || y < 'A' || y > 'J') {
@@ -49,8 +61,7 @@ public class Board {
 		}
 
 		// Ship cannot go off grid
-		if ((isVertical && x + shipLength > 11) ||
-				(!isVertical && (char) y + shipLength > 'K')) {
+		if (x + shipWidth - 1 > 10 || y + shipLength - 1 > 'J') {
 			return false;
 		}
 
@@ -66,11 +77,8 @@ public class Board {
 		List<Square> thisOccupied = ship.getOccupiedSquares();
 
 		for (Ship s : ships) {
-			List<Square> otherOccupied = s.getOccupiedSquares();
-			for (Square sq : otherOccupied) {
-				if (thisOccupied.contains(sq)) {
-					return false;
-				}
+			if (!ship.checkNoCollision(s)) {
+				return false;
 			}
 		}
 
@@ -101,18 +109,17 @@ public class Board {
         outcome.setResult(MISS);
 
         // Check if shot hits a ship.
-        for (Ship s : ships) {
-            if (s.getOccupiedSquares().contains(outcome.getLocation())) {
-                outcome.setShip(s);
-                // It is a hit when the ship part runs out of HP
-                if (s.registerAttack(outcome.getLocation(), Weapon.BOMB)) {
+        for (Ship s : ships)
+			if (s.getOccupiedSquares().contains(outcome.getLocation())) {
+				outcome.setShip(s);
+				// It is a hit when the ship part runs out of HP
+				if (s.registerAttack(outcome.getLocation(), currentWeapon)) {
 					outcome.setResult(HIT);
 				} else {
-                	outcome.setResult(MISS);
+					outcome.setResult(MISS);
 				}
-                break;
-            }
-        }
+				break;
+			}
 
         // If the ship is sunk
         if (outcome.getShip() != null && outcome.getShip().isSunk()) {
@@ -126,9 +133,10 @@ public class Board {
 			}
 			sunkShips.add(outcome.getShip());
 
-			// If first ship is sunk, give sonars
+			// If first ship is sunk, give sonars, upgrade weapons
 			if (sonarCount == -1) {
 				sonarCount = 2;
+				weaponUp();
 			}
         }
 
@@ -161,6 +169,11 @@ public class Board {
 		sonarCount--;
 		attacks.add(outcome);
 		return outcome;
+	}
+
+	private void weaponUp() {
+		if (this.currentWeapon != Weapon.LASER)
+			currentWeapon = Weapon.LASER;
 	}
 
 	private void setSunkShipStatus(Ship s) {
