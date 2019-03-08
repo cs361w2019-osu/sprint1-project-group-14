@@ -28,12 +28,14 @@
 }
 
 .ships {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin: 30px;
-}
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     justify-content: center;
+     margin: 30px;
+ }
+
+
 
 .ship {
     border-spacing: 5px;
@@ -388,4 +390,25 @@
    background: transparent;
    border:0px;
    margin-top:-5px;
+}
+
+.button_submarine {
+    margin-top:10px;
+    height:35px;
+    width:35px;
+    opacity: 0.5;
+}
+
+.button_submarine[data-selected="true"] {
+    opacity: 1;
+}
+
+.submarine_button {
+    position: relative;
+    margin-top:135px;
+    left: 20px;
+}
+
+.ship_extend {
+    margin-left:0px;
 }

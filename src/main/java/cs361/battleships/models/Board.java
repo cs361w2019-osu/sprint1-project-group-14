@@ -43,7 +43,7 @@ public class Board {
 	 * @param isVertical whether the ship will be placed vertically
 	 * @return boolean success of ship placement
 	 */
-	public boolean placeShip(Ship ship, int x, char y, boolean isVertical) {
+	public boolean placeShip(Ship ship, int x, char y, boolean isVertical, int depth) {
 		// If ship doesn't exist, something went wrong with ship creation.
 		if (ship == null) {
 			return false;
@@ -77,7 +77,7 @@ public class Board {
 		}
 
 		// Make sure the ship doesn't overlap with other ships
-		ship.initialize(x, y, isVertical);
+		ship.initialize(x, y, isVertical, depth);
 		List<Square> thisOccupied = ship.getOccupiedSquares();
 
 		for (Ship s : ships) {

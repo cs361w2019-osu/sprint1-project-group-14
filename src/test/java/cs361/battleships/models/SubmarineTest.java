@@ -21,7 +21,7 @@ public class SubmarineTest {
     @Test
     public void testInitializeShip() {
         Ship s = ShipFactory.createShip("SUBMARINE");
-        s.initialize(5, 'B', true);
+        s.initialize(5, 'B', true, 0);
 
         List<Square> squareList2 = new ArrayList<>();
         squareList2.add(new Square(5, 'B'));
@@ -36,15 +36,21 @@ public class SubmarineTest {
     @Test
     public void testSinkShip() {
         Ship s = ShipFactory.createShip("SUBMARINE");
-        s.initialize(5, 'B', true);
+        s.initialize(5, 'B', true, 0);
 
         // Change when new weapon implemented
         assertEquals(false, s.registerAttack(new Square(4, 'B'), Weapon.BOMB));
-        assertEquals(true, s.registerAttack(new Square(7, 'C'), Weapon.BOMB));
-        assertEquals(false, s.registerAttack(new Square(8, 'B'), Weapon.BOMB));
+        assertEquals(false, s.registerAttack(new Square(7, 'C'), Weapon.BOMB));
+        assertEquals(true, s.registerAttack(new Square(7, 'C'), Weapon.LASER));
+        assertEquals(false, s.registerAttack(new Square(8, 'B'), Weapon.LASER));
 
         assertEquals(false, s.isSunk());
-        assertEquals(true, s.registerAttack(new Square(8, 'B'), Weapon.BOMB));
+        assertEquals(true, s.registerAttack(new Square(8, 'B'), Weapon.LASER));
         assertEquals(true, s.isSunk());
+
+        // When placed on surface, bombs work
+        Ship s2 = ShipFactory.createShip("SUBMARINE");
+        s2.initialize(5, 'B', true, 1);
+        assertEquals(true, s2.registerAttack(new Square(7, 'C'), Weapon.BOMB));
     }
 }

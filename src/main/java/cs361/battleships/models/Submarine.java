@@ -12,6 +12,8 @@ public class Submarine extends Ship {
     private final String NAME = "SUBMARINE";
     private final int CAPTAIN_INDEX = 3;
 
+    private int depth = 1;
+
     @JsonProperty
     private List<Square> occupiedSquares;
     @JsonProperty
@@ -20,7 +22,7 @@ public class Submarine extends Ship {
     public Submarine() {
     }
 
-    public void initialize(int r, char c, boolean isVert) {
+    public void initialize(int r, char c, boolean isVert, int depth) {
         occupiedSquares = new ArrayList<>();
 
         // Horizontal template
@@ -31,9 +33,12 @@ public class Submarine extends Ship {
         occupiedSquares.add(new Square(1, 'C'));
 
         placeNewShipPosition2D(r, c, isVert, LENGTH, occupiedSquares);
+
+        this.depth = depth;
     }
 
     public boolean registerAttack(Square s, Weapon w) {
+        if (this.depth < 1 && w != Weapon.LASER) return false;
         return decrementHealth(health, occupiedSquares, s);
     }
 
@@ -50,6 +55,10 @@ public class Submarine extends Ship {
     @JsonIgnore
     public int getWidth() {
         return WIDTH;
+    }
+
+    public int getDepth() {
+        return depth;
     }
 
     public List<Square> getOccupiedSquares() {
