@@ -18,6 +18,11 @@ public enum AtackStatus {
 	SONAR,
 
 	/**
+	 * Player moved their ships
+	 */
+	MOVE,
+
+	/**
 	 * THe result if an attack sinks the enemy ship
 	 */
 	SUNK,

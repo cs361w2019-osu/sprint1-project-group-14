@@ -59,6 +59,14 @@ public class Game {
         return true;
     }
 
+    public boolean move(Direction dir) {
+        Result playerMove = playersBoard.move(dir);
+        if (playerMove.getResult() == INVALID) {
+            return false;
+        }
+
+        return true;
+    }
     /**
      * @return char random Column from 'A' to 'J'.
      */
