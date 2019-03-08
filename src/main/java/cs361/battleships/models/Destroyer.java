@@ -10,6 +10,7 @@ import java.util.List;
 public class Destroyer extends Ship {
     private final int LENGTH = 3;
     private final int WIDTH = 1;
+    private final int DEPTH = 1;
     private final String NAME = "DESTROYER";
     private final int CAPTAIN_INDEX = 1;
 
@@ -21,7 +22,7 @@ public class Destroyer extends Ship {
     public Destroyer() {
     }
 
-    public void initialize(int r, char c, boolean isVert) {
+    public void initialize(int r, char c, boolean isVert, int depth) {
         occupiedSquares = getNewShipPosition1D(r, c, isVert, LENGTH);
     }
 
@@ -42,6 +43,11 @@ public class Destroyer extends Ship {
     @JsonIgnore
     public int getWidth() {
         return WIDTH;
+    }
+
+    @JsonIgnore
+    public int getDepth() {
+        return DEPTH;
     }
 
     public List<Square> getOccupiedSquares() {

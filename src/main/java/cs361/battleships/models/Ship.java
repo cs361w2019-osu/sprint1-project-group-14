@@ -84,6 +84,8 @@ public abstract class Ship {
 	 * @return boolean if collision did not occurred.
 	 */
 	protected boolean checkNoCollision(Ship other) {
+		if (this.getDepth() != other.getDepth()) return true;
+
 		List<Square> thisOccupied = this.getOccupiedSquares();
 		List<Square> otherOccupied = other.getOccupiedSquares();
 		for (Square sq : otherOccupied) {
@@ -118,7 +120,7 @@ public abstract class Ship {
 	 * @param c
 	 * @param isVert
 	 */
-	public abstract void initialize(int r, char c, boolean isVert);
+	public abstract void initialize(int r, char c, boolean isVert, int depth);
 
 	/**
 	 * Register an attack to the ship.
@@ -141,6 +143,11 @@ public abstract class Ship {
 	 * @return int ship width.
 	 */
 	public abstract int getWidth();
+
+	/**
+	 * @return int ship depth.
+	 */
+	public abstract int getDepth();
 
 	/**
 	 * @return List<Square> squares the ship occupies.

@@ -5,6 +5,7 @@ var placedShips = 0;
 var game;
 var shipType;
 var vertical;
+var depth = 0;
 var currentWeapon = "BOMB";
 var statusBar = document.getElementsByClassName("status-bar")[0];
 
@@ -246,7 +247,7 @@ function cellClick() {
     let row = this.parentNode.rowIndex + 1;
     let col = String.fromCharCode(this.cellIndex + 65);
     if (isSetup) {
-        sendXhr("POST", "/place", { game: game, shipType: shipType, x: row, y: col, isVertical: vertical }, function (data) {
+        sendXhr("POST", "/place", { game: game, shipType: shipType, x: row, y: col, isVertical: vertical, depth: depth  }, function (data) {
             game = data;
             placedShips++;
             redrawGrid("player");
