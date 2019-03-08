@@ -5,9 +5,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.EnumMap;
+
 
 import static cs361.battleships.models.AtackStatus.*;
-
+import static cs361.battleships.models.Direction.*;
 
 public class Board {
 
@@ -15,6 +19,7 @@ public class Board {
 	@JsonProperty private List<Result> attacks;
 	@JsonProperty private List<Ship> sunkShips;
 	@JsonProperty private int sonarCount;
+	@JsonProperty private int moveCount;
 	@JsonProperty private Weapon currentWeapon;
 
 	/*
@@ -25,6 +30,7 @@ public class Board {
 		attacks = new ArrayList<>();
 		sunkShips = new ArrayList<>();
 		sonarCount = -1;
+		moveCount = -2;
 		currentWeapon = Weapon.BOMB;
 	}
 
@@ -138,6 +144,13 @@ public class Board {
 				sonarCount = 2;
 				weaponUp();
 			}
+
+			// If two ships are sunk, give movement
+			if (moveCount == -2) {
+				moveCount = -1;
+			} else if (moveCount == -1) {
+				moveCount = 2;
+			}
         }
 
         // If all ships were sunk trigger surrender.
@@ -169,6 +182,108 @@ public class Board {
 		sonarCount--;
 		attacks.add(outcome);
 		return outcome;
+	}
+
+	/**
+	 * Handle the move fleet feature.
+	 * @param dir Direction to move the fleet.
+	 * @return Result the outcome of the move.
+	 */
+	public Result move(Direction dir) {
+		Result outcome = new Result();
+		if (moveCount <= 0) {
+			outcome.setResult(INVALID);
+			return outcome;
+		}
+		outcome.setResult(MOVE);
+
+		moveAll(dir);
+		fixCollisions(dir);
+
+		moveCount--;
+		attacks.add(outcome);
+		return outcome;
+	}
+
+	/**
+	 * Move an individual ship in the given direction
+	 * Does NOT handle collisions
+	 * @param dir direction to move ship
+	 * @param i ship to move represented by index
+	 */
+	private void moveShip(Direction dir, int i) {
+		for (int j = 0; j < ships.get(i).getOccupiedSquares().size(); j++) {
+			Square tempSquare = ships.get(i).getOccupiedSquares().get(j);
+			switch (dir) {
+				case EAST:
+					ships.get(i).getOccupiedSquares().get(j).setColumn((char)(tempSquare.getColumn() + 1));
+					break;
+				case WEST:
+					ships.get(i).getOccupiedSquares().get(j).setColumn((char)(tempSquare.getColumn() - 1));
+					break;
+				case NORTH:
+					ships.get(i).getOccupiedSquares().get(j).setRow(tempSquare.getRow() - 1);
+					break;
+				case SOUTH:
+					ships.get(i).getOccupiedSquares().get(j).setRow(tempSquare.getRow() + 1);
+					break;
+			}
+		}
+	}
+
+	/**
+	 * Move the entire fleet in the given direction
+	 * Does NOT handle collisions
+	 * @param dir direction to move ship
+	 */
+	private void moveAll(Direction dir) {
+		for (int i = 0; i < ships.size(); i++) {
+			if (!ships.get(i).isSunk()) {
+				moveShip(dir, i);
+			}
+		}
+	}
+
+	/**
+	 * Finds and fixes all out of bounds and collisions caused by fleet movement
+	 * @param dir direction the ships were originally moved
+	 */
+	private void fixCollisions(Direction dir) {
+		Queue<Integer> OOBShips = new LinkedList<>();
+		List<Integer> moved = new ArrayList<>();
+		int x;
+		char y;
+		for (int i = 0; i < ships.size(); i++) {
+			for (Square s: ships.get(i).getOccupiedSquares()) {
+				x = s.getRow();
+				y = s.getColumn();
+				if (x < 1 || x > 10 || y < 'A' || y > 'J') {
+					OOBShips.add(i);
+					moved.add(i);
+					break;
+				}
+			}
+		}
+		while (!OOBShips.isEmpty()) {
+			int index = OOBShips.remove();
+
+			EnumMap<Direction,Direction> rev = new EnumMap<Direction, Direction>(Direction.class);
+			rev.put(NORTH, SOUTH);
+			rev.put(SOUTH, NORTH);
+			rev.put(WEST, EAST);
+			rev.put(EAST, WEST);
+			if (!ships.get(index).isSunk())
+				moveShip(rev.get(dir), index);
+
+			for (int i = 0; i < ships.size(); i++) {
+				if (index !=  i && moved.indexOf(i) == -1 && !ships.get(index).checkNoCollision(ships.get(i))) {
+					OOBShips.add(i);
+				}
+			}
+		}
+	}
+	public List<Ship> getShips() {
+		return ships;
 	}
 
 	private void weaponUp() {

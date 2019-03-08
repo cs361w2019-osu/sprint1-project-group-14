@@ -399,6 +399,17 @@ function place2D(pos, len) {
     }
 }
 
+function registerMove(dirs) {
+    dirs.forEach(function(dir) {
+        document.getElementById("move_fleet_" + dir).addEventListener("click", function (e) {
+            sendXhr("POST", "/move", { game: game, dir:dir.toUpperCase()}, function (data) {
+                game = data;
+                redrawGrid('player');
+            });
+        });
+    });
+}
+
 function initGame() {
     let p_ships = ["place_minesweeper", "place_destroyer", "place_battleship", "place_submarine"];
     makeGrid(document.getElementById("opponent"), false);
@@ -500,6 +511,9 @@ function initGame() {
             b.dataset.toggled = "true";
         };
     });
+
+    registerMove(['north','south','east','west'])
+
     document.getElementById("reset").addEventListener("click", function (e) {
         window.location.reload(false);
     });
