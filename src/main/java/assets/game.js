@@ -2,24 +2,23 @@ var isSetup = true;
 var isPlayerTurn = true;
 var gameOver = 0;
 var placedShips = 0;
-var hoverCellIndex = 0;
-var outCellIndex = 0;
-var hoverRowIndex = 0;
-var outRowIndex = 0;
 var game;
 var shipType;
 var vertical;
+var currentWeapon = "BOMB";
 var statusBar = document.getElementsByClassName("status-bar")[0];
 
 var playerShipsMap = {
     "MINESWEEPER": "place_minesweeper",
     "DESTROYER": "place_destroyer",
-    "BATTLESHIP": "place_battleship"
+    "BATTLESHIP": "place_battleship",
+    "SUBMARINE": "place_submarine",
 };
 var opponentShipsMap = {
     "MINESWEEPER": "opponent_minesweeper",
     "DESTROYER": "opponent_destroyer",
-    "BATTLESHIP": "opponent_battleship"
+    "BATTLESHIP": "opponent_battleship",
+    "SUBMARINE": "opponent_submarine",
 };
 
 function makeGrid(table) {
@@ -80,49 +79,34 @@ function sonarPulse(board, col, row, target) {
             }
         }
     }
+}
 
-    for (let i = 0; i < 10; i++) {
-        document.getElementById('opponent').rows[i].removeEventListener("mouseover", getRowIndex);
-        document.getElementById('opponent').rows[i].removeEventListener("mouseout", cleanRow);
-
-        for (let j = 0; j < 10; j++) {
-            document.getElementById('opponent').rows[i].cells[j].removeEventListener("mouseover", getCellIndex);
-            document.getElementById('opponent').rows[i].cells[j].removeEventListener("mouseout", cleanCell);
-        }
+function checkWeapon(board) {
+    if (board.currentWeapon != currentWeapon) {
+        currentWeapon = board.currentWeapon;
+        alert("Your weapon has been upgraded!");
     }
-
 }
 
 var getCellIndex = function (e) {
-    hoverCellIndex = e.srcElement.cellIndex;
-    x = hoverRowIndex;
-    y = hoverCellIndex;
-     for (let j = 0; j < 10; j++) {
-      for (let i = 0; i < 10; j++) {
-            document.getElementById('opponent').rows[i].cells[j].style.background = "";
-      }
-     }
-    document.getElementById('opponent').rows[x].cells[y].style.background = "gray";
-    document.getElementById('opponent').rows[x-1].cells[y-1].style.background = "gray";
-    document.getElementById('opponent').rows[x-1].cells[y].style.background = "gray";
-    document.getElementById('opponent').rows[x-1].cells[y+1].style.background = "gray";
-    document.getElementById('opponent').rows[x].cells[y-1].style.background = "gray";
-    document.getElementById('opponent').rows[x].cells[y+1].style.background = "gray";
-    document.getElementById('opponent').rows[x+1].cells[y-1].style.background = "gray";
-    document.getElementById('opponent').rows[x+1].cells[y].style.background = "gray";
-    document.getElementById('opponent').rows[x+1].cells[y+1].style.background = "gray";
-    document.getElementById('opponent').rows[x-2].cells[y].style.background = "gray";
-    document.getElementById('opponent').rows[x+2].cells[y].style.background = "gray";
-    document.getElementById('opponent').rows[x].cells[y-2].style.background = "gray";
-    document.getElementById('opponent').rows[x].cells[y+2].style.background = "gray";
+    if (document.getElementById("sonar_pulse").dataset.toggled === "false")
+        return;
 
-}
-var getRowIndex = function (e) {
-    hoverRowIndex = e.path[1].rowIndex;
+    var hoverCellIndex = e.srcElement.cellIndex;
+    var hoverRowIndex = e.target.parentNode.rowIndex+1;
+
+    for (i = hoverRowIndex - 2; i <= hoverRowIndex + 2; i++) {
+        for (j = hoverCellIndex - 2; j <= hoverCellIndex + 2; j++) {
+            if (i <= 10 && i >= 1 && j < 10 && j >= 0 && Math.abs(hoverRowIndex - i) + Math.abs(hoverCellIndex - j) <= 2) {
+                document.getElementById('opponent').rows[i - 1].cells[j].style.background = "gray";
+            }
+        }
+    }
 }
 
 var cleanCell = function (e) {
-    outCellIndex = e.srcElement.cellIndex;
+    var outCellIndex = e.srcElement.cellIndex;
+    var outRowIndex = e.target.parentNode.rowIndex+1;
 
     for (i = outRowIndex - 2; i <= outRowIndex + 2; i++) {
         for (j = outCellIndex - 2; j <= outCellIndex + 2; j++) {
@@ -132,10 +116,6 @@ var cleanCell = function (e) {
         }
     }
 }
-var cleanRow = function (e) {
-    outRowIndex = e.path[1].rowIndex;
-}
-
 
 function markActionBar(person, result) {
     personUpper = person.replace(/\b\w/g, function (l) { return l.toUpperCase() })
@@ -212,6 +192,7 @@ function redrawGrid(person) {
             document.getElementById('opponent').rows[i].cells[j].addEventListener("mouseout", cleanCell);
         }
     }
+    checkWeapon(game.opponentsBoard);
 }
 
 var oldListener;
@@ -270,7 +251,7 @@ function cellClick() {
             placedShips++;
             redrawGrid("player");
             redrawGrid("opponent");
-            if (placedShips == 3) {
+            if (placedShips == 4) {
                 isSetup = false;
                 registerCellListener((e) => { });
             }
@@ -389,8 +370,37 @@ function place(size) {
     }
 }
 
+// More customizable highlighting. Takes in template position 0-indexed
+// length of highlight for vertical rotation.
+function place2D(pos, len) {
+    return function () {
+        let row = this.parentNode.rowIndex;
+        let col = this.cellIndex;
+        vertical = (document.getElementById("is_vertical").dataset.toggled) == "true";
+        let table = document.getElementById("player");
+
+        pos.forEach(function(cord) {
+            let row_off = cord[0];
+            let col_off = cord[1];
+            let cell;
+            if (vertical) {
+                let temp = row_off;
+                row_off = col_off;
+                col_off = len - temp - 3;
+            }
+
+            let r = table.rows[row+row_off]
+
+            if (r !== undefined && r.cells[col+col_off] !== undefined) {
+                cell = r.cells[col+col_off]
+                cell.classList.toggle("placed");
+            }
+        });
+    }
+}
+
 function initGame() {
-    let p_ships = ["place_minesweeper", "place_destroyer", "place_battleship"];
+    let p_ships = ["place_minesweeper", "place_destroyer", "place_battleship", "place_submarine"];
     makeGrid(document.getElementById("opponent"), false);
     makeGrid(document.getElementById("player"), true);
     statusBar.innerText = "Place your ship.";
@@ -450,6 +460,26 @@ function initGame() {
             registerCellListener(place(4));
         }
     });
+
+    document.getElementById("place_submarine").addEventListener("click", function (e) {
+        if (!isPlayerTurn) {
+            return
+        }
+        shipType = "SUBMARINE";
+        let s = document.getElementById("place_submarine");
+        p_ships.forEach(function (ship) {
+            let s = document.getElementById(ship);
+            if (s.dataset.placed == "false") {
+                s.dataset.selected = "false";
+            };
+        });
+        s.dataset.selected = "true";
+
+        if (s.dataset.placed == "false" && isPlayerTurn) {
+            registerCellListener(place2D([[1,0], [1,1], [1,2], [1,3], [0,2]], 4));
+        }
+    });
+
     document.getElementById("is_vertical").addEventListener("click", function (e) {
         let b = e.srcElement;
         if (b.dataset.toggled == "true") {
