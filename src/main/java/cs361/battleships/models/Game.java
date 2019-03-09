@@ -6,6 +6,7 @@ import java.util.Random;
 
 import static cs361.battleships.models.AtackStatus.INVALID;
 import static cs361.battleships.models.AtackStatus.SUNK;
+import static cs361.battleships.models.Direction.*;
 
 public class Game {
 
@@ -49,6 +50,8 @@ public class Game {
         }
 
         Result opponentAttackResult;
+        Direction[] dirs;
+        dirs = new Direction[]{NORTH, EAST, WEST, SOUTH};
 
         do {
             // AI does random attacks, so it might attack the same spot twice
@@ -58,7 +61,17 @@ public class Game {
             else
                 opponentAttackResult = playersBoard.attack(randRow(), randCol());
         } while(opponentAttackResult.getResult() == INVALID);
-
+        if (opponentAttackResult.getResult() == SUNK) {
+            if (opponentMoveCount == -2) {
+                opponentMoveCount = -1;
+            } else if (opponentMoveCount == -1) {
+                opponentMoveCount = 2;
+            }
+        }
+        if (randRow() == 10 && opponentMoveCount > 0) {
+            playersBoard.move(dirs[new Random().nextInt(4)], opponentMoveCount);
+            opponentMoveCount--;
+        }
         return true;
     }
     public boolean sonar(int actionRow, char actionColumn) {
@@ -69,23 +82,12 @@ public class Game {
         return true;
     }
 
-    public boolean move(Direction dir, String player) {
-        Result playerMove;
-        if (player.equals("player")) {
-            playerMove = playersBoard.move(dir, playerMoveCount);
-        } else {
-            playerMove = opponentsBoard.move(dir, opponentMoveCount);
-        }
-
+    public boolean move(Direction dir) {
+        Result playerMove = playersBoard.move(dir, playerMoveCount);
         if (playerMove.getResult() == INVALID) {
             return false;
         }
-
-        if (player.equals("player")) {
-            playerMoveCount--;
-        } else {
-            opponentMoveCount--;
-        }
+        playerMoveCount--;
 
         return true;
     }
@@ -107,7 +109,7 @@ public class Game {
      * @return int random depth
      */
     private int randDepth() {
-        return new Random().nextInt(1);
+        return new Random().nextInt(2);
     }
 
     /**

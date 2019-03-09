@@ -88,6 +88,9 @@
     background-color: gray;
     pointer-events: none;
 }
+.miss {
+    background-color: blue;
+}
 
 .occupied {
     background-color: black;
@@ -99,10 +102,6 @@
 
 .sunk {
     background-color: red;
-}
-
-.miss {
-    background-color: blue;
 }
 
 .mainGame, .playerSide {

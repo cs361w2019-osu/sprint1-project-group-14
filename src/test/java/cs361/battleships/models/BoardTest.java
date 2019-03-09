@@ -154,7 +154,7 @@ public class BoardTest {
         Ship s = ShipFactory.createShip("MINESWEEPER");
         board.placeShip(s, 1, 'A', false, 1);
 
-        assertSame(board.move(Direction.EAST).getResult(), AtackStatus.INVALID);
+        assertSame(board.move(Direction.EAST ,0).getResult(), AtackStatus.INVALID);
     }
 
     @Test
@@ -178,7 +178,7 @@ public class BoardTest {
         assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getRow(), 4);
         assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getColumn(), 'D');
 
-        assertSame(board.move(Direction.EAST).getResult(), AtackStatus.MOVE);
+        assertSame(board.move(Direction.EAST, 2).getResult(), AtackStatus.MOVE);
 
         assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getRow(), 1);
         assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getColumn(), 'B');
@@ -211,7 +211,7 @@ public class BoardTest {
         assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getRow(), 3);
         assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getColumn(), 'D');
 
-        assertSame(board.move(Direction.NORTH).getResult(), AtackStatus.MOVE);
+        assertSame(board.move(Direction.NORTH, 2).getResult(), AtackStatus.MOVE);
 
         assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getRow(), 1);
         assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getColumn(), 'A');
@@ -245,7 +245,7 @@ public class BoardTest {
         assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getRow(), 8);
         assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getColumn(), 'E');
 
-        assertSame(board.move(Direction.WEST).getResult(), AtackStatus.MOVE);
+        assertSame(board.move(Direction.WEST, 2).getResult(), AtackStatus.MOVE);
 
         assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getRow(), 1);
         assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getColumn(), 'A');
@@ -253,7 +253,7 @@ public class BoardTest {
         assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getRow(), 8);
         assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getColumn(), 'D');
 
-        assertSame(board.move(Direction.EAST).getResult(), AtackStatus.MOVE);
+        assertSame(board.move(Direction.EAST,1 ).getResult(), AtackStatus.MOVE);
 
         assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getRow(), 1);
         assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getColumn(), 'B');
@@ -261,7 +261,7 @@ public class BoardTest {
         assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getRow(), 8);
         assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getColumn(), 'E');
 
-        assertSame(board.move(Direction.EAST).getResult(), AtackStatus.INVALID);
+        assertSame(board.move(Direction.EAST, 0).getResult(), AtackStatus.INVALID);
     }
 
     @Test

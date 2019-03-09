@@ -405,7 +405,7 @@ function place2D(pos, len) {
 function registerMove(dirs) {
     dirs.forEach(function(dir) {
         document.getElementById("move_fleet_" + dir).addEventListener("click", function (e) {
-            sendXhr("POST", "/move", { game: game, dir:dir.toUpperCase(), player: "player"}, function (data) {
+            sendXhr("POST", "/move", { game: game, dir:dir.toUpperCase()}, function (data) {
                 game = data;
                 redrawGrid('player');
             });
