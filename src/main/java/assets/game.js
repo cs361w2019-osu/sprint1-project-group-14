@@ -46,6 +46,8 @@ function markHits(board, elementId, surrenderNum) {
             className = "sonar";
             sonarPulse(board, attack.location.column, attack.location.row, elementId);
         }
+        else if (attack.result === "MOVE")
+            className = "move";
         else if (attack.result === "SUNK")
             className = "sunk";
         else if (attack.result === "SURRENDER") {
@@ -53,7 +55,7 @@ function markHits(board, elementId, surrenderNum) {
             surrender = surrenderNum;
         }
 
-        if (className !== "sonar") {
+        if (className !== "sonar" && className !== "move") {
             document.getElementById(elementId).rows[attack.location.row - 1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add(className);
         }
         markActionBar(elementId, className);

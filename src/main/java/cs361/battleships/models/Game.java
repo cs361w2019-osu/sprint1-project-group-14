@@ -5,11 +5,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Random;
 
 import static cs361.battleships.models.AtackStatus.INVALID;
+import static cs361.battleships.models.AtackStatus.SUNK;
+import static cs361.battleships.models.Direction.*;
 
 public class Game {
 
     @JsonProperty private Board playersBoard = new Board();
     @JsonProperty private Board opponentsBoard = new Board();
+    @JsonProperty private int playerMoveCount = -2;
+    @JsonProperty private int opponentMoveCount = -2;
 
     /*
 	DO NOT change the signature of this method. It is used by the grading scripts.
@@ -36,9 +40,18 @@ public class Game {
         Result playerAttack = opponentsBoard.attack(x, y);
         if (playerAttack.getResult() == INVALID) {
             return false;
+        } else if (playerAttack.getResult() == SUNK) {
+            // If two ships are sunk, give movement
+            if (playerMoveCount == -2) {
+                playerMoveCount = -1;
+            } else if (playerMoveCount == -1) {
+                playerMoveCount = 2;
+            }
         }
 
         Result opponentAttackResult;
+        Direction[] dirs;
+        dirs = new Direction[]{NORTH, EAST, WEST, SOUTH};
 
         do {
             // AI does random attacks, so it might attack the same spot twice
@@ -48,7 +61,17 @@ public class Game {
             else
                 opponentAttackResult = playersBoard.attack(randRow(), randCol());
         } while(opponentAttackResult.getResult() == INVALID);
-
+        if (opponentAttackResult.getResult() == SUNK) {
+            if (opponentMoveCount == -2) {
+                opponentMoveCount = -1;
+            } else if (opponentMoveCount == -1) {
+                opponentMoveCount = 2;
+            }
+        }
+        if (randRow() == 10 && opponentMoveCount > 0) {
+            playersBoard.move(dirs[new Random().nextInt(4)], opponentMoveCount);
+            opponentMoveCount--;
+        }
         return true;
     }
     public boolean sonar(int actionRow, char actionColumn) {
@@ -60,10 +83,11 @@ public class Game {
     }
 
     public boolean move(Direction dir) {
-        Result playerMove = playersBoard.move(dir);
+        Result playerMove = playersBoard.move(dir, playerMoveCount);
         if (playerMove.getResult() == INVALID) {
             return false;
         }
+        playerMoveCount--;
 
         return true;
     }
@@ -85,7 +109,7 @@ public class Game {
      * @return int random depth
      */
     private int randDepth() {
-        return new Random().nextInt(1);
+        return new Random().nextInt(2);
     }
 
     /**

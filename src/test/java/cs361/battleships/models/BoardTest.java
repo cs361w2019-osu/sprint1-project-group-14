@@ -113,7 +113,7 @@ public class BoardTest {
         board.placeShip(s, 3, 'A', true, 1);
 
         assertSame(board.attack(3, 'A').getResult(), AtackStatus.SUNK);
-        assertSame(board.attack(4, 'A').getResult(), AtackStatus.SUNK);
+        assertSame(board.attack(4, 'A').getResult(), AtackStatus.MISS);
     }
 
     @Test
@@ -126,7 +126,7 @@ public class BoardTest {
 
         // Surrender doesn't activate after sinking same ship twice
         assertSame(board.attack(3, 'A').getResult(), AtackStatus.SUNK);
-        assertSame(board.attack(4, 'A').getResult(), AtackStatus.SUNK);
+        assertSame(board.attack(4, 'A').getResult(), AtackStatus.MISS);
 
         assertSame(board.attack(4, 'E').getResult(), AtackStatus.MISS);
         assertSame(board.attack(4, 'E').getResult(), AtackStatus.SURRENDER);
@@ -154,7 +154,7 @@ public class BoardTest {
         Ship s = ShipFactory.createShip("MINESWEEPER");
         board.placeShip(s, 1, 'A', false, 1);
 
-        assertSame(board.move(Direction.EAST).getResult(), AtackStatus.INVALID);
+        assertSame(board.move(Direction.EAST ,0).getResult(), AtackStatus.INVALID);
     }
 
     @Test
@@ -178,7 +178,7 @@ public class BoardTest {
         assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getRow(), 4);
         assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getColumn(), 'D');
 
-        assertSame(board.move(Direction.EAST).getResult(), AtackStatus.MOVE);
+        assertSame(board.move(Direction.EAST, 2).getResult(), AtackStatus.MOVE);
 
         assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getRow(), 1);
         assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getColumn(), 'B');
@@ -211,7 +211,7 @@ public class BoardTest {
         assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getRow(), 3);
         assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getColumn(), 'D');
 
-        assertSame(board.move(Direction.NORTH).getResult(), AtackStatus.MOVE);
+        assertSame(board.move(Direction.NORTH, 2).getResult(), AtackStatus.MOVE);
 
         assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getRow(), 1);
         assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getColumn(), 'A');
@@ -245,7 +245,7 @@ public class BoardTest {
         assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getRow(), 8);
         assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getColumn(), 'E');
 
-        assertSame(board.move(Direction.WEST).getResult(), AtackStatus.MOVE);
+        assertSame(board.move(Direction.WEST, 2).getResult(), AtackStatus.MOVE);
 
         assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getRow(), 1);
         assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getColumn(), 'A');
@@ -253,7 +253,7 @@ public class BoardTest {
         assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getRow(), 8);
         assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getColumn(), 'D');
 
-        assertSame(board.move(Direction.EAST).getResult(), AtackStatus.MOVE);
+        assertSame(board.move(Direction.EAST,1 ).getResult(), AtackStatus.MOVE);
 
         assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getRow(), 1);
         assertSame(board.getShips().get(0).getOccupiedSquares().get(0).getColumn(), 'B');
@@ -261,7 +261,7 @@ public class BoardTest {
         assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getRow(), 8);
         assertSame(board.getShips().get(1).getOccupiedSquares().get(0).getColumn(), 'E');
 
-        assertSame(board.move(Direction.EAST).getResult(), AtackStatus.INVALID);
+        assertSame(board.move(Direction.EAST, 0).getResult(), AtackStatus.INVALID);
     }
 
     @Test
@@ -277,5 +277,21 @@ public class BoardTest {
         board.attack(4, 'D');
         board.attack(4, 'D');
         assertSame(board.sonar(4, 'D').getResult(), AtackStatus.SONAR);
+    }
+
+    @Test
+    public void testDepthOverlay() {
+        Board board = new Board();
+        Ship s1 = ShipFactory.createShip("BATTLESHIP");
+        Ship s2 = ShipFactory.createShip("SUBMARINE");
+
+        board.placeShip(s2, 3, 'D', false, 0);
+        board.placeShip(s1, 4, 'D', false, 1);
+
+        assertSame(board.attack(4, 'D').getResult(), AtackStatus.HIT);
+        assertSame(board.attack(4, 'F').getResult(), AtackStatus.MISS);
+        assertSame(board.attack(4, 'F').getResult(), AtackStatus.SUNK);
+        assertSame(board.attack(4, 'G').getResult(), AtackStatus.MISS);
+        assertSame(board.attack(4, 'G').getResult(), AtackStatus.SURRENDER);
     }
 }

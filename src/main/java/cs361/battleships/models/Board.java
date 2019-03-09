@@ -19,7 +19,6 @@ public class Board {
 	@JsonProperty private List<Result> attacks;
 	@JsonProperty private List<Ship> sunkShips;
 	@JsonProperty private int sonarCount;
-	@JsonProperty private int moveCount;
 	@JsonProperty private Weapon currentWeapon;
 
 	/*
@@ -30,7 +29,6 @@ public class Board {
 		attacks = new ArrayList<>();
 		sunkShips = new ArrayList<>();
 		sonarCount = -1;
-		moveCount = -2;
 		currentWeapon = Weapon.BOMB;
 	}
 
@@ -103,65 +101,95 @@ public class Board {
 	 * @return Result the outcome of the attack.
 	 */
 	public Result attack(int x, char y) {
-	    Result outcome = new Result();
-	    outcome.setLocation(new Square(x, y));
+		List<Ship> attackedShips = new ArrayList<>();
+		List<Result> outcomes = new ArrayList<>();
 
-	    // Check if attack in bounds of Board.
-        if (x < 1 || x > 10 || y < 'A' || y > 'J') {
-            outcome.setResult(INVALID);
-            return outcome;
-        }
-        // Assume miss.
-        outcome.setResult(MISS);
+		// Check if attack in bounds of Board.
+		if (x < 1 || x > 10 || y < 'A' || y > 'J') {
+			Result outcome = new Result();
+			outcome.setLocation(new Square(x, y));
+			outcome.setResult(INVALID);
+			return outcome;
+		}
 
-        // Check if shot hits a ship.
-        for (Ship s : ships)
-			if (s.getOccupiedSquares().contains(outcome.getLocation())) {
-				outcome.setShip(s);
-				// It is a hit when the ship part runs out of HP
-				if (s.registerAttack(outcome.getLocation(), currentWeapon)) {
-					outcome.setResult(HIT);
-				} else {
-					outcome.setResult(MISS);
+		// Check if shot hits a ship that hasn't been sunk.
+		for (Ship s : ships) {
+			Square sq = new Square(x, y);
+			if (s.getOccupiedSquares().contains(sq) && !s.isSunk()) {
+				attackedShips.add(s);
+			}
+		}
+
+		for (Ship s : attackedShips) {
+			Result outcome = new Result();
+			outcome.setLocation(new Square(x, y));
+
+			outcome.setShip(s);
+			// It is a hit when the ship part runs out of HP
+			if (s.registerAttack(outcome.getLocation(), currentWeapon)) {
+				outcome.setResult(HIT);
+			} else {
+				outcome.setResult(MISS);
+			}
+
+			outcomes.add(outcome);
+		}
+
+		for (Result outcome : outcomes) {
+			// If the ship is sunk
+			if (outcome.getShip().isSunk()) {
+				outcome.setResult(SUNK);
+				setSunkShipStatus(outcome.getShip());
+				sunkShips.add(outcome.getShip());
+
+				// If first ship is sunk, give sonars, upgrade weapons
+				if (sonarCount == -1) {
+					sonarCount = 2;
+					weaponUp();
 				}
+			}
+
+			// If all ships were sunk trigger surrender.
+			if (sunkShips.size() >= ships.size()) {
+				outcome.setResult(SURRENDER);
+			}
+
+			// Attack was valid; add it to the list.
+			attacks.add(outcome);
+		}
+
+		// Track highestPriority result, by default a miss
+		Result highestResult = null;
+		int highestPriority = 0;
+		for (Result outcome : outcomes) {
+			int currPriority = 0;
+			if (outcome.getResult() == SURRENDER) {
+				highestResult = outcome;
 				break;
 			}
 
-        // If the ship is sunk
-        if (outcome.getShip() != null && outcome.getShip().isSunk()) {
-            outcome.setResult(SUNK);
-            setSunkShipStatus(outcome.getShip());
-            // If the ship has already been sunk
-			for (Ship s : sunkShips) {
-				if (s.getShipName().equals(outcome.getShip().getShipName())) {
-					return outcome;
-				}
-			}
-			sunkShips.add(outcome.getShip());
-
-			// If first ship is sunk, give sonars, upgrade weapons
-			if (sonarCount == -1) {
-				sonarCount = 2;
-				weaponUp();
+			if (outcome.getResult() == SUNK) {
+				currPriority = 2;
+			} else if (outcome.getResult() == HIT) {
+				currPriority = 1;
 			}
 
-			// If two ships are sunk, give movement
-			if (moveCount == -2) {
-				moveCount = -1;
-			} else if (moveCount == -1) {
-				moveCount = 2;
+			if (currPriority > highestPriority) {
+				highestPriority = currPriority;
+				highestResult = outcome;
 			}
-        }
+		}
 
-        // If all ships were sunk trigger surrender.
-        if (sunkShips.size() >= ships.size()) {
-            outcome.setResult(SURRENDER);
-        }
+		// Attack was a miss
+		if (highestResult == null) {
+			highestResult = new Result();
+			highestResult.setLocation(new Square(x, y));
+			highestResult.setResult(MISS);
+			attacks.add(highestResult);
+		}
 
-        // Attack was valid; add it to the list.
-        attacks.add(outcome);
-
-        return outcome;
+		// Return highest priority outcome
+        return highestResult;
 	}
 	/**
 	 * Sets the location that the sonar is hit
@@ -189,7 +217,7 @@ public class Board {
 	 * @param dir Direction to move the fleet.
 	 * @return Result the outcome of the move.
 	 */
-	public Result move(Direction dir) {
+	public Result move(Direction dir, int moveCount) {
 		Result outcome = new Result();
 		if (moveCount <= 0) {
 			outcome.setResult(INVALID);
@@ -200,7 +228,6 @@ public class Board {
 		moveAll(dir);
 		fixCollisions(dir);
 
-		moveCount--;
 		attacks.add(outcome);
 		return outcome;
 	}
@@ -274,9 +301,10 @@ public class Board {
 			rev.put(EAST, WEST);
 			if (!ships.get(index).isSunk())
 				moveShip(rev.get(dir), index);
+				moved.add(index);
 
 			for (int i = 0; i < ships.size(); i++) {
-				if (index !=  i && moved.indexOf(i) == -1 && !ships.get(index).checkNoCollision(ships.get(i))) {
+				if (moved.indexOf(i) == -1 && !ships.get(index).checkNoCollision(ships.get(i))) {
 					OOBShips.add(i);
 				}
 			}
