@@ -28,12 +28,14 @@
 }
 
 .ships {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin: 30px;
-}
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     justify-content: center;
+     margin: 30px;
+ }
+
+
 
 .ship {
     border-spacing: 5px;
@@ -53,6 +55,9 @@
     width: 30px;
 }
 
+.invisible {
+    visibility: hidden;
+}
 
 .ship[data-selected="true"] td {
     background-color: blue;
@@ -70,7 +75,7 @@
     background-color: red;
 }
 
-.battleGrid td:hover {
+#opponent td:hover {
     background-color: gray;
 }
 
@@ -83,6 +88,9 @@
     background-color: gray;
     pointer-events: none;
 }
+.miss {
+    background-color: blue;
+}
 
 .occupied {
     background-color: black;
@@ -94,10 +102,6 @@
 
 .sunk {
     background-color: red;
-}
-
-.miss {
-    background-color: blue;
 }
 
 .mainGame, .playerSide {
@@ -325,3 +329,85 @@
   .button-3d.button-caution:active, .button-3d.button-caution.active, .button-3d.button-caution.is-active {
     -webkit-box-shadow: 0 2px 0 #dc0010, 0 3px 3px rgba(0, 0, 0, 0.2);
             box-shadow: 0 2px 0 #dc0010, 0 3px 3px rgba(0, 0, 0, 0.2); }
+.sonar_space{
+    background: #9370de;
+}
+
+.btn-group {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.button-circle,
+.button-box,
+.button-square {
+  padding: 0 !important;
+  width: 40px; }
+  .button-circle.button-small,
+  .button-box.button-small,
+  .button-square.button-small {
+    width: 40px; }
+
+
+ .button-box {
+    width: 1000px;
+   border-radius: 10px; }
+
+.button-primary,
+.button-primary-flat {
+  background-color: #1B9AF7;
+  border-color: #1B9AF7;
+  color: #FFF; }
+  .button-primary:visited,
+  .button-primary-flat:visited {
+    color: #FFF; }
+  .button-primary:hover, .button-primary:focus,
+  .button-primary-flat:hover,
+  .button-primary-flat:focus {
+    background-color: #4cb0f9;
+    border-color: #4cb0f9;
+    color: #FFF; }
+  .button-primary:active, .button-primary.active, .button-primary.is-active,
+  .button-primary-flat:active,
+  .button-primary-flat.active,
+  .button-primary-flat.is-active {
+    background-color: #2798eb;
+    border-color: #2798eb;
+}
+.empty_space{
+   width:40px;
+   height:40px;
+   background: transparent;
+   border:0px;
+   margin-top:-5px;
+}
+
+.empty_holder{
+   width:40px;
+   height:135px;
+   background: transparent;
+   border:0px;
+   margin-top:-5px;
+}
+
+.button_submarine {
+    margin-top:10px;
+    height:35px;
+    width:35px;
+    opacity: 0.5;
+}
+
+.button_submarine[data-selected="true"] {
+    opacity: 1;
+}
+
+.submarine_button {
+    position: relative;
+    margin-top:135px;
+    left: 20px;
+}
+
+.ship_extend {
+    margin-left:0px;
+}

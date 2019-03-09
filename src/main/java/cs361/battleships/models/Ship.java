@@ -13,11 +13,14 @@ import java.util.List;
 		@JsonSubTypes.Type(value=Battleship.class, name="BATTLESHIP"),
 		@JsonSubTypes.Type(value=Minesweeper.class, name="MINESWEEPER"),
 		@JsonSubTypes.Type(value=Destroyer.class, name="DESTROYER"),
+		@JsonSubTypes.Type(value=Submarine.class, name="SUBMARINE"),
 })
 public abstract class Ship {
 	/**
-	 * Updates the occupied squares based on starting square
+	 * Creates the occupied squares based on starting square
 	 * and whether the ship was placed vertically.
+	 *
+	 * Ship needs to have width of 1.
 	 *
 	 * If the ship was placed horizontally, the left most square is the
 	 * start. If the ship was placed vertically, the top most square
@@ -30,7 +33,7 @@ public abstract class Ship {
 	 * @param c char starting column
 	 * @param isVert boolean whether the ship is placed vertically
 	 */
-	protected List<Square> getNewShipPosition(int r, char c, boolean isVert, int len) {
+	protected List<Square> getNewShipPosition1D(int r, char c, boolean isVert, int len) {
 		List<Square> occupiedSquares = new ArrayList<>();
 		for (int i = 0; i < len; i++) {
 			if (isVert) {
@@ -40,6 +43,57 @@ public abstract class Ship {
 			}
 		}
 		return occupiedSquares;
+	}
+
+    /**
+     * Updates the occupied squares based on starting square
+     * and whether the ship was placed vertically for 2D ships based
+     * on horizontal template.
+     *
+     * If the ship was placed horizontally, the left most square is the
+     * start. If the ship was placed vertically, the top most square
+     * is the start.
+     *
+     * Assuming unbounded grid. Check boundries before calling this
+     * method.
+     *
+     * @param r int starting row
+     * @param c char starting column
+     * @param isVert boolean whether the ship is placed vertically
+     */
+	protected void placeNewShipPosition2D(int r, char c, boolean isVert, int length, List<Square> occupied) {
+        // Rotate template
+        if (isVert) {
+            for (Square sq : occupied) {
+            	int row = sq.getRow();
+            	sq.setRow(sq.getColumn()+1-'A');
+            	sq.setColumn((char) (length-row-2+'A'));
+            }
+        }
+
+        // Move ship
+        for (Square sq : occupied) {
+            sq.setRow(sq.getRow()+r-1);
+            sq.setColumn((char) (sq.getColumn()+c-'A'));
+        }
+    }
+
+	/**
+	 * Check to see if this ship is not colliding with other ship.
+	 * @param other ship to compare against
+	 * @return boolean if collision did not occurred.
+	 */
+	protected boolean checkNoCollision(Ship other) {
+		if (this.getDepth() != other.getDepth()) return true;
+
+		List<Square> thisOccupied = this.getOccupiedSquares();
+		List<Square> otherOccupied = other.getOccupiedSquares();
+		for (Square sq : otherOccupied) {
+			if (thisOccupied.contains(sq)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -66,7 +120,7 @@ public abstract class Ship {
 	 * @param c
 	 * @param isVert
 	 */
-	public abstract void initialize(int r, char c, boolean isVert);
+	public abstract void initialize(int r, char c, boolean isVert, int depth);
 
 	/**
 	 * Register an attack to the ship.
@@ -84,6 +138,16 @@ public abstract class Ship {
 	 * @return int ship length.
 	 */
 	public abstract int getLength();
+
+	/**
+	 * @return int ship width.
+	 */
+	public abstract int getWidth();
+
+	/**
+	 * @return int ship depth.
+	 */
+	public abstract int getDepth();
 
 	/**
 	 * @return List<Square> squares the ship occupies.

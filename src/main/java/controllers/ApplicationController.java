@@ -23,7 +23,7 @@ public class ApplicationController {
     public Result placeShip(Context context, PlacementGameAction g) {
         Game game = g.getGame();
         Ship ship = ShipFactory.createShip(g.getShipType());
-        boolean result = game.placeShip(ship, g.getActionRow(), g.getActionColumn(), g.isVertical());
+        boolean result = game.placeShip(ship, g.getActionRow(), g.getActionColumn(), g.isVertical(), g.getDepth());
         if (result) {
             return Results.json().render(game);
         } else {
@@ -44,6 +44,15 @@ public class ApplicationController {
     public Result sonar(Context context, PositionalGameAction g) {
         Game game = g.getGame();
         boolean result = game.sonar(g.getActionRow(), g.getActionColumn());
+        if (result) {
+            return Results.json().render(game);
+        } else {
+            return Results.badRequest();
+        }
+    }
+    public Result move(Context context, MoveGameAction g) {
+        Game game = g.getGame();
+        boolean result = game.move(g.getDir());
         if (result) {
             return Results.json().render(game);
         } else {

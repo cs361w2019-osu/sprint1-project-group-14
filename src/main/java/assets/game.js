@@ -5,17 +5,21 @@ var placedShips = 0;
 var game;
 var shipType;
 var vertical;
+var depth = 0;
+var currentWeapon = "BOMB";
 var statusBar = document.getElementsByClassName("status-bar")[0];
 
 var playerShipsMap = {
     "MINESWEEPER": "place_minesweeper",
     "DESTROYER": "place_destroyer",
-    "BATTLESHIP": "place_battleship"
+    "BATTLESHIP": "place_battleship",
+    "SUBMARINE": "place_submarine",
 };
 var opponentShipsMap = {
     "MINESWEEPER": "opponent_minesweeper",
     "DESTROYER": "opponent_destroyer",
-    "BATTLESHIP": "opponent_battleship"
+    "BATTLESHIP": "opponent_battleship",
+    "SUBMARINE": "opponent_submarine",
 };
 
 function makeGrid(table) {
@@ -42,6 +46,8 @@ function markHits(board, elementId, surrenderNum) {
             className = "sonar";
             sonarPulse(board, attack.location.column, attack.location.row, elementId);
         }
+        else if (attack.result === "MOVE")
+            className = "move";
         else if (attack.result === "SUNK")
             className = "sunk";
         else if (attack.result === "SURRENDER") {
@@ -49,7 +55,7 @@ function markHits(board, elementId, surrenderNum) {
             surrender = surrenderNum;
         }
 
-        if (className !== "sonar") {
+        if (className !== "sonar" && className !== "move") {
             document.getElementById(elementId).rows[attack.location.row - 1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add(className);
         }
         markActionBar(elementId, className);
@@ -75,6 +81,13 @@ function sonarPulse(board, col, row, target) {
                 document.getElementById(target).rows[i - 1].cells[j].classList.add("sonar");
             }
         }
+    }
+}
+
+function checkWeapon(board) {
+    if (board.currentWeapon != currentWeapon) {
+        currentWeapon = board.currentWeapon;
+        alert("Your weapon has been upgraded!");
     }
 }
 
@@ -182,6 +195,7 @@ function redrawGrid(person) {
             document.getElementById('opponent').rows[i].cells[j].addEventListener("mouseout", cleanCell);
         }
     }
+    checkWeapon(game.opponentsBoard);
 }
 
 var oldListener;
@@ -235,12 +249,12 @@ function cellClick() {
     let row = this.parentNode.rowIndex + 1;
     let col = String.fromCharCode(this.cellIndex + 65);
     if (isSetup) {
-        sendXhr("POST", "/place", { game: game, shipType: shipType, x: row, y: col, isVertical: vertical }, function (data) {
+        sendXhr("POST", "/place", { game: game, shipType: shipType, x: row, y: col, isVertical: vertical, depth: depth  }, function (data) {
             game = data;
             placedShips++;
             redrawGrid("player");
             redrawGrid("opponent");
-            if (placedShips == 3) {
+            if (placedShips == 4) {
                 isSetup = false;
                 registerCellListener((e) => { });
             }
@@ -359,8 +373,48 @@ function place(size) {
     }
 }
 
+// More customizable highlighting. Takes in template position 0-indexed
+// length of highlight for vertical rotation.
+function place2D(pos, len) {
+    return function () {
+        let row = this.parentNode.rowIndex;
+        let col = this.cellIndex;
+        vertical = (document.getElementById("is_vertical").dataset.toggled) == "true";
+        let table = document.getElementById("player");
+
+        pos.forEach(function(cord) {
+            let row_off = cord[0];
+            let col_off = cord[1];
+            let cell;
+            if (vertical) {
+                let temp = row_off;
+                row_off = col_off;
+                col_off = len - temp - 3;
+            }
+
+            let r = table.rows[row+row_off]
+
+            if (r !== undefined && r.cells[col+col_off] !== undefined) {
+                cell = r.cells[col+col_off]
+                cell.classList.toggle("placed");
+            }
+        });
+    }
+}
+
+function registerMove(dirs) {
+    dirs.forEach(function(dir) {
+        document.getElementById("move_fleet_" + dir).addEventListener("click", function (e) {
+            sendXhr("POST", "/move", { game: game, dir:dir.toUpperCase()}, function (data) {
+                game = data;
+                redrawGrid('player');
+            });
+        });
+    });
+}
+
 function initGame() {
-    let p_ships = ["place_minesweeper", "place_destroyer", "place_battleship"];
+    let p_ships = ["place_minesweeper", "place_destroyer", "place_battleship", "place_submarine"];
     makeGrid(document.getElementById("opponent"), false);
     makeGrid(document.getElementById("player"), true);
     statusBar.innerText = "Place your ship.";
@@ -420,6 +474,26 @@ function initGame() {
             registerCellListener(place(4));
         }
     });
+
+    document.getElementById("place_submarine").addEventListener("click", function (e) {
+        if (!isPlayerTurn) {
+            return
+        }
+        shipType = "SUBMARINE";
+        let s = document.getElementById("place_submarine");
+        p_ships.forEach(function (ship) {
+            let s = document.getElementById(ship);
+            if (s.dataset.placed == "false") {
+                s.dataset.selected = "false";
+            };
+        });
+        s.dataset.selected = "true";
+
+        if (s.dataset.placed == "false" && isPlayerTurn) {
+            registerCellListener(place2D([[1,0], [1,1], [1,2], [1,3], [0,2]], 4));
+        }
+    });
+
     document.getElementById("is_vertical").addEventListener("click", function (e) {
         let b = e.srcElement;
         if (b.dataset.toggled == "true") {
@@ -440,6 +514,21 @@ function initGame() {
             b.dataset.toggled = "true";
         };
     });
+
+    document.getElementById("sub_depth_0").addEventListener("click", function (e) {
+        document.getElementById("sub_depth_0").dataset.selected = "true";
+        document.getElementById("sub_depth_1").dataset.selected = "false";
+        depth = 0;
+    });
+
+    document.getElementById("sub_depth_1").addEventListener("click", function (e) {
+        document.getElementById("sub_depth_1").dataset.selected = "true";
+        document.getElementById("sub_depth_0").dataset.selected = "false";
+        depth = 1;
+    });
+
+    registerMove(['north','south','east','west'])
+
     document.getElementById("reset").addEventListener("click", function (e) {
         window.location.reload(false);
     });

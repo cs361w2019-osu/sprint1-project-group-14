@@ -2,31 +2,43 @@ package cs361.battleships.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
+import java.util.ArrayList;
 import java.util.List;
 
-@JsonTypeName("battleship")
-public class Battleship extends Ship {
+public class Submarine extends Ship {
     private final int LENGTH = 4;
-    private final int WIDTH = 1;
-    private final int DEPTH = 1;
-    private final String NAME = "BATTLESHIP";
-    private final int CAPTAIN_INDEX = 2;
+    private final int WIDTH = 2;
+    private final String NAME = "SUBMARINE";
+    private final int CAPTAIN_INDEX = 3;
+
+    private int depth = 1;
 
     @JsonProperty
     private List<Square> occupiedSquares;
     @JsonProperty
-    private int[] health = {1, 1, 2, 1};
+    private int[] health = {1, 1, 1, 2, 1};
 
-    public Battleship() {
+    public Submarine() {
     }
 
     public void initialize(int r, char c, boolean isVert, int depth) {
-        occupiedSquares = getNewShipPosition1D(r, c, isVert, LENGTH);
+        occupiedSquares = new ArrayList<>();
+
+        // Horizontal template
+        occupiedSquares.add(new Square(2, 'A'));
+        occupiedSquares.add(new Square(2, 'B'));
+        occupiedSquares.add(new Square(2, 'C'));
+        occupiedSquares.add(new Square(2, 'D'));
+        occupiedSquares.add(new Square(1, 'C'));
+
+        placeNewShipPosition2D(r, c, isVert, LENGTH, occupiedSquares);
+
+        this.depth = depth;
     }
 
     public boolean registerAttack(Square s, Weapon w) {
+        if (this.depth < 1 && w != Weapon.LASER) return false;
         return decrementHealth(health, occupiedSquares, s);
     }
 
@@ -45,9 +57,8 @@ public class Battleship extends Ship {
         return WIDTH;
     }
 
-    @JsonIgnore
     public int getDepth() {
-        return DEPTH;
+        return depth;
     }
 
     public List<Square> getOccupiedSquares() {
