@@ -113,7 +113,7 @@ public class BoardTest {
         board.placeShip(s, 3, 'A', true, 1);
 
         assertSame(board.attack(3, 'A').getResult(), AtackStatus.SUNK);
-        assertSame(board.attack(4, 'A').getResult(), AtackStatus.SUNK);
+        assertSame(board.attack(4, 'A').getResult(), AtackStatus.MISS);
     }
 
     @Test
@@ -126,7 +126,7 @@ public class BoardTest {
 
         // Surrender doesn't activate after sinking same ship twice
         assertSame(board.attack(3, 'A').getResult(), AtackStatus.SUNK);
-        assertSame(board.attack(4, 'A').getResult(), AtackStatus.SUNK);
+        assertSame(board.attack(4, 'A').getResult(), AtackStatus.MISS);
 
         assertSame(board.attack(4, 'E').getResult(), AtackStatus.MISS);
         assertSame(board.attack(4, 'E').getResult(), AtackStatus.SURRENDER);
@@ -277,5 +277,21 @@ public class BoardTest {
         board.attack(4, 'D');
         board.attack(4, 'D');
         assertSame(board.sonar(4, 'D').getResult(), AtackStatus.SONAR);
+    }
+
+    @Test
+    public void testDepthOverlay() {
+        Board board = new Board();
+        Ship s1 = ShipFactory.createShip("BATTLESHIP");
+        Ship s2 = ShipFactory.createShip("SUBMARINE");
+
+        board.placeShip(s2, 3, 'D', false, 0);
+        board.placeShip(s1, 4, 'D', false, 1);
+
+        assertSame(board.attack(4, 'D').getResult(), AtackStatus.HIT);
+        assertSame(board.attack(4, 'F').getResult(), AtackStatus.MISS);
+        assertSame(board.attack(4, 'F').getResult(), AtackStatus.SUNK);
+        assertSame(board.attack(4, 'G').getResult(), AtackStatus.MISS);
+        assertSame(board.attack(4, 'G').getResult(), AtackStatus.SURRENDER);
     }
 }
